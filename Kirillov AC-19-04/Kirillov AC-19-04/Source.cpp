@@ -43,6 +43,29 @@ KS NewKS()
 	return ks1;
 }
 
+int Menu()
+{
+	cout << "Меню программы" << endl <<
+		"1-Добавить трубу" << endl <<
+		"2-Добавить компрессорную станцию" << endl <<
+		"3-Просмотр всех объектов" << endl <<
+		"4-Редактировать трубу" << endl <<
+		"5-Редактировать компрессорную станцию" << endl <<
+		"6-Сохранить в файл" << endl <<
+		"7-Загрузить из файла" << endl <<
+		"8-Открыть меню" << endl <<
+		"0-Выход из программы" << endl<<
+		"Что вы хотите сделать?"<<endl;
+	int a;
+	cin >> a;
+	while (a < 0 || a > 7)
+	{
+		cout << "Введите верное число!" << endl;
+		cin >> a;
+	}
+	return a;
+}
+
 bool ChangeStatus(bool b)
 {
 	b = !b;
@@ -52,6 +75,9 @@ bool ChangeStatus(bool b)
 int main()
 {
 	setlocale(LC_ALL, "Russian");
+	int operation = Menu();
+	
+
 	pipe p1 = NewPipe();
 	KS ks1 = NewKS();
 	cout << "Длинна данной трубы:" << p1.length << endl << "Диаметр данной трубы:" << p1.diametr << endl;
@@ -62,5 +88,7 @@ int main()
 	cout << "Имя компрессорной станции:" << ks1.name << endl;
 	cout << "Работающие цеха:" << ks1.number_ceh_inWork << "/" << ks1.number_ceh << endl;
 	cout << "Эффективность компрессорной станции" << ks1.efficiency << "%";
+
+
 	return 0;
 }
