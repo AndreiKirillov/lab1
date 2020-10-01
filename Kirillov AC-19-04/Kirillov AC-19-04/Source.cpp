@@ -59,7 +59,7 @@ int Menu()
 		"Что вы хотите сделать?"<<endl;
 	int a;
 	cin >> a;
-	while (a < 0 || a > 7)
+	while (a < 0 || a > 8)
 	{
 		cout << "Введите верное число!" << endl;
 		cin >> a;
@@ -72,7 +72,7 @@ int MakeStep()
 	cout << "Какое действие вы хотите сделать?" << endl;
 	int a;
 	cin >> a;
-	while (a < 0 || a > 7)
+	while (a < 0 || a > 8)
 	{
 		cout << "Введите верное число!" << endl;
 		cin >> a;
@@ -94,6 +94,8 @@ int main()
 	int NumberPipe = 0;
 	int NumberKS = 0;
 	int i;
+	ofstream outf;
+	ifstream inf;
 	int operation = Menu();
 	while (operation != 0)
 	{
@@ -194,13 +196,14 @@ int main()
 				}
 
 			} while (WhatToRedact != 0);
+			break;
 		case 6:
-			ofstream outf("Saves.txt");
+			outf.open("Saves.txt");
 			if (NumberPipe == 0 && NumberKS == 0)
 			{
 				cout << "Нет данных для сохранения!" << endl;
 			}
-			else 
+			else
 			{
 				outf << NumberPipe << endl;
 				outf << NumberKS << endl;
@@ -223,9 +226,43 @@ int main()
 					outf << ks[i].efficiency << endl;
 					i++;
 				}
-		    }
+			};
 			outf.close();
 			cout << "Данные успешно сохранены!" << endl;
+			break;
+		case 7:
+			inf.open("Saves.txt");
+			inf >> NumberPipe;
+			inf >> NumberKS;
+			if (NumberPipe == 0 && NumberKS == 0)
+			{
+				cout << "Не удалось загрузить данные, файл пуст!" << endl;
+			}
+			else
+			{
+				i = 1;
+				while (i <= NumberPipe)
+				{
+					inf >> pipes[i].id;
+					inf >> pipes[i].length;
+					inf >> pipes[i].diametr;
+					inf >> pipes[i].remont;
+					i++;
+				}
+				i = 1;
+				while (i <= NumberKS)
+				{
+					inf >> ks[i].id;
+					inf >> ks[i].name;
+					inf >> ks[i].number_ceh;
+					inf >> ks[i].number_ceh_inWork;
+					inf >> ks[i].efficiency;
+					i++;
+				}
+			}
+			inf.close();
+			cout << "Загрузка прошла успешно" << endl;
+	
 	    }
 		operation = MakeStep();
     }
