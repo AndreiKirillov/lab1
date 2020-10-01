@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 using namespace std;
 
@@ -92,55 +93,54 @@ int main()
 	KS ks[100];
 	int NumberPipe = 0;
 	int NumberKS = 0;
+	int i;
 	int operation = Menu();
 	while (operation != 0)
 	{
-	    switch (operation)
-	    {
-	    case 1:
-		    NumberPipe++;
-		    pipes[NumberPipe] = NewPipe();
-		    pipes[NumberPipe].id = NumberPipe;
-		    break;
-	    case 2:
-	    	NumberKS++;
-	    	ks[NumberKS] = NewKS();
-	    	ks[NumberKS].id = NumberKS;
-	    	break;
-	    case 3:
-	    	cout << "Список труб:" << endl;
-		    if (NumberPipe == 0)
-		    {
-		    	cout << "Список труб пуст" << endl;
-	    	}
-	    	else
-	    	{
-	    		int i;
-		    	for (i = 1; i < NumberPipe + 1; i++)
-		    	{
-			    	cout << "ID трубы:" << pipes[i].id << endl;
-			    	cout << "Длинна трубы:" << pipes[i].length << endl;
-			    	cout << "Диаметр трубы:" << pipes[i].diametr << endl;
-			    	cout << "Статус ремонта:" << pipes[i].remont << endl << " " << endl;
-			    }
-		    }
-		    cout << "Список компрессорных станций:" << endl;
-	    	if (NumberKS == 0)
-	    	{
-	    		cout << "Список компрессорных станций пуст" << endl;
-	    	}
-	    	else
-	    	{
-	    		int j;
-	    		for (j = 1; j < NumberKS + 1; j++)
-	    		{
-	    			cout << "ID КС:" << ks[j].id << endl;
-	    			cout << "Имя КС:" << ks[j].name << endl;
-	    			cout << "Работающие цеха:" << ks[j].number_ceh_inWork << "/" << ks[j].number_ceh << endl;
-	    			cout << "Эффективность компрессорной станции" << ks[j].efficiency << "%" << endl << " " << endl;
-		    	}
-	    	}
-	    	break;
+		switch (operation)
+		{
+		case 1:
+			NumberPipe++;
+			pipes[NumberPipe] = NewPipe();
+			pipes[NumberPipe].id = NumberPipe;
+			break;
+		case 2:
+			NumberKS++;
+			ks[NumberKS] = NewKS();
+			ks[NumberKS].id = NumberKS;
+			break;
+		case 3:
+			cout << "Список труб:" << endl;
+			if (NumberPipe == 0)
+			{
+				cout << "Список труб пуст" << endl;
+			}
+			else
+			{
+				for (i = 1; i < NumberPipe + 1; i++)
+				{
+					cout << "ID трубы:" << pipes[i].id << endl;
+					cout << "Длинна трубы:" << pipes[i].length << endl;
+					cout << "Диаметр трубы:" << pipes[i].diametr << endl;
+					cout << "Статус ремонта:" << pipes[i].remont << endl << " " << endl;
+				}
+			}
+			cout << "Список компрессорных станций:" << endl;
+			if (NumberKS == 0)
+			{
+				cout << "Список компрессорных станций пуст" << endl;
+			}
+			else
+			{
+				for (i = 1; i < NumberKS + 1; i++)
+				{
+					cout << "ID КС:" << ks[i].id << endl;
+					cout << "Имя КС:" << ks[i].name << endl;
+					cout << "Работающие цеха:" << ks[i].number_ceh_inWork << "/" << ks[i].number_ceh << endl;
+					cout << "Эффективность компрессорной станции" << ks[i].efficiency << "%" << endl << " " << endl;
+				}
+			}
+			break;
 		case 4:
 			cout << "Введите ID трубы, статус которой хотите редактировать:" << endl;
 			int b;
@@ -194,6 +194,38 @@ int main()
 				}
 
 			} while (WhatToRedact != 0);
+		case 6:
+			ofstream outf("Saves.txt");
+			if (NumberPipe == 0 && NumberKS == 0)
+			{
+				cout << "Нет данных для сохранения!" << endl;
+			}
+			else 
+			{
+				outf << NumberPipe << endl;
+				outf << NumberKS << endl;
+				i = 1;
+				while (i <= NumberPipe)
+				{
+					outf << pipes[i].id << endl;
+					outf << pipes[i].length << endl;
+					outf << pipes[i].diametr << endl;
+					outf << pipes[i].remont << endl;
+					i++;
+				}
+				i = 1;
+				while (i <= NumberKS)
+				{
+					outf << ks[i].id << endl;
+					outf << ks[i].name << endl;
+					outf << ks[i].number_ceh << endl;
+					outf << ks[i].number_ceh_inWork << endl;
+					outf << ks[i].efficiency << endl;
+					i++;
+				}
+		    }
+			outf.close();
+			cout << "Данные успешно сохранены!" << endl;
 	    }
 		operation = MakeStep();
     }
