@@ -20,6 +20,10 @@ struct KS
 	float efficiency;
 };
 
+ifstream inf;
+int NumberPipe = 0;
+int NumberKS = 0;
+
 pipe NewPipe()
 {
 	pipe pipe1;
@@ -86,16 +90,25 @@ bool ChangeStatus(bool b)
 	return b;
 }
 
+void DownloadSaves(pipe p[100],KS k[1]);
+
 int main()
 {
 	setlocale(LC_ALL, "Russian");
 	pipe pipes[100];
 	KS ks[100];
-	int NumberPipe = 0;
-	int NumberKS = 0;
+	cout << "Вы хотите загрузить сохраненные данные? [y/n]" << endl;
+	char ch;
+	cin >> ch;
+	if (ch == 'y' || ch == '1')
+		DownloadSaves(pipes, ks);
+	else if (ch = 'n' || ch == '0')
+		cout << " " << endl;
+	else
+		cout << "Ошибка! Вы можете загрузить данные позже, напечатав '7'" << " " << endl;
+	
 	int i;
 	ofstream outf;
-	ifstream inf;
 	int operation = Menu();
 	while (operation != 0)
 	{
@@ -115,7 +128,7 @@ int main()
 			cout << "Список труб:" << endl;
 			if (NumberPipe == 0)
 			{
-				cout << "Список труб пуст" << endl;
+				cout << "Список труб пуст" << endl << " " << endl;
 			}
 			else
 			{
@@ -130,7 +143,7 @@ int main()
 			cout << "Список компрессорных станций:" << endl;
 			if (NumberKS == 0)
 			{
-				cout << "Список компрессорных станций пуст" << endl;
+				cout << "Список компрессорных станций пуст" << endl << " " << endl;
 			}
 			else
 			{
@@ -231,40 +244,59 @@ int main()
 			cout << "Данные успешно сохранены!" << endl;
 			break;
 		case 7:
-			inf.open("Saves.txt");
-			inf >> NumberPipe;
-			inf >> NumberKS;
-			if (NumberPipe == 0 && NumberKS == 0)
-			{
-				cout << "Не удалось загрузить данные, файл пуст!" << endl;
-			}
-			else
-			{
-				i = 1;
-				while (i <= NumberPipe)
-				{
-					inf >> pipes[i].id;
-					inf >> pipes[i].length;
-					inf >> pipes[i].diametr;
-					inf >> pipes[i].remont;
-					i++;
-				}
-				i = 1;
-				while (i <= NumberKS)
-				{
-					inf >> ks[i].id;
-					inf >> ks[i].name;
-					inf >> ks[i].number_ceh;
-					inf >> ks[i].number_ceh_inWork;
-					inf >> ks[i].efficiency;
-					i++;
-				}
-			}
-			inf.close();
-			cout << "Загрузка прошла успешно" << endl;
+			DownloadSaves(pipes, ks);
+			break;
+		case 8:
+			cout << "Меню программы" << endl <<
+				"1-Добавить трубу" << endl <<
+				"2-Добавить компрессорную станцию" << endl <<
+				"3-Просмотр всех объектов" << endl <<
+				"4-Редактировать трубу" << endl <<
+				"5-Редактировать компрессорную станцию" << endl <<
+				"6-Сохранить в файл" << endl <<
+				"7-Загрузить из файла" << endl <<
+				"8-Открыть меню" << endl <<
+				"0-Выход из программы" << endl;
+			break;
 	
 	    }
 		operation = MakeStep();
     }
 	return 0;
+}
+
+void DownloadSaves(pipe p[100], KS k[100])
+{
+	int i;
+	inf.open("Saves.txt");
+	inf >> NumberPipe;
+	inf >> NumberKS;
+	if (NumberPipe == 0 && NumberKS == 0)
+	{
+		cout << "Не удалось загрузить данные, файл пуст!" << endl;
+	}
+	else
+	{
+		i = 1;
+		while (i <= NumberPipe)
+		{
+			inf >> p[i].id;
+			inf >> p[i].length;
+			inf >> p[i].diametr;
+			inf >> p[i].remont;
+			i++;
+		}
+		i = 1;
+		while (i <= NumberKS)
+		{
+			inf >> k[i].id;
+			inf >> k[i].name;
+			inf >> k[i].number_ceh;
+			inf >> k[i].number_ceh_inWork;
+			inf >> k[i].efficiency;
+			i++;
+		}
+	}
+	inf.close();
+	cout << "Загрузка прошла успешно" << endl;
 }
