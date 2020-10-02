@@ -20,6 +20,7 @@ struct KS
 	float efficiency;
 };
 
+ofstream outf;
 ifstream inf;
 int NumberPipe = 0;
 int NumberKS = 0;
@@ -90,7 +91,9 @@ bool ChangeStatus(bool b)
 	return b;
 }
 
-void DownloadSaves(pipe p[100],KS k[1]);
+void DownloadSaves(pipe p[100],KS k[100]);
+
+void SaveData(pipe p[100], KS k[100]);
 
 int main()
 {
@@ -102,7 +105,7 @@ int main()
 	cin >> ch;
 	if (ch == 'y' || ch == '1')
 		DownloadSaves(pipes, ks);
-	else if (ch = 'n' || ch == '0')
+	else if (ch == 'n' || ch == '0')
 		cout << " " << endl;
 	else
 		cout << "Ошибка! Вы можете загрузить данные позже, напечатав '7'" << " " << endl;
@@ -211,37 +214,7 @@ int main()
 			} while (WhatToRedact != 0);
 			break;
 		case 6:
-			outf.open("Saves.txt");
-			if (NumberPipe == 0 && NumberKS == 0)
-			{
-				cout << "Нет данных для сохранения!" << endl;
-			}
-			else
-			{
-				outf << NumberPipe << endl;
-				outf << NumberKS << endl;
-				i = 1;
-				while (i <= NumberPipe)
-				{
-					outf << pipes[i].id << endl;
-					outf << pipes[i].length << endl;
-					outf << pipes[i].diametr << endl;
-					outf << pipes[i].remont << endl;
-					i++;
-				}
-				i = 1;
-				while (i <= NumberKS)
-				{
-					outf << ks[i].id << endl;
-					outf << ks[i].name << endl;
-					outf << ks[i].number_ceh << endl;
-					outf << ks[i].number_ceh_inWork << endl;
-					outf << ks[i].efficiency << endl;
-					i++;
-				}
-			};
-			outf.close();
-			cout << "Данные успешно сохранены!" << endl;
+			SaveData(pipes, ks);
 			break;
 		case 7:
 			DownloadSaves(pipes, ks);
@@ -263,6 +236,42 @@ int main()
 		operation = MakeStep();
     }
 	return 0;
+}
+
+void SaveData(pipe p[100], KS k[100])
+{
+	int i;
+	outf.open("Saves.txt");
+	if (NumberPipe == 0 && NumberKS == 0)
+	{
+		cout << "Нет данных для сохранения!" << endl;
+	}
+	else
+	{
+		outf << NumberPipe << endl;
+		outf << NumberKS << endl;
+		i = 1;
+		while (i <= NumberPipe)
+		{
+			outf << p[i].id << endl;
+			outf << p[i].length << endl;
+			outf << p[i].diametr << endl;
+			outf << p[i].remont << endl;
+			i++;
+		}
+		i = 1;
+		while (i <= NumberKS)
+		{
+			outf << k[i].id << endl;
+			outf << k[i].name << endl;
+			outf << k[i].number_ceh << endl;
+			outf << k[i].number_ceh_inWork << endl;
+			outf << k[i].efficiency << endl;
+			i++;
+		}
+		cout << "Данные успешно сохранены!" << endl;
+	};
+	outf.close();
 }
 
 void DownloadSaves(pipe p[100], KS k[100])
