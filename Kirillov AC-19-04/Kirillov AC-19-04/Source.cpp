@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-struct pipe
+struct pipe      //Описание структуры трубы
 {
 	int id;
 	int length;
@@ -11,7 +11,7 @@ struct pipe
 	bool remont;
 };
 
-struct KS
+struct KS                //Описание структуры компрессорной станции
 {
 	int id;
 	string name;
@@ -20,12 +20,12 @@ struct KS
 	float efficiency;
 };
 
-ofstream outf;
-ifstream inf;
-int NumberPipe = 0;
-int NumberKS = 0;
+ofstream outf;       //Для вывода в файл
+ifstream inf;        //Для загрузки из файла
+int NumberPipe = 0;  //Переменная для количества труб
+int NumberKS = 0;    //Переменная для кол-ва КС
 
-pipe NewPipe()
+pipe NewPipe()          //Функция создания новой трубы
 {
 	pipe pipe1;
 	cout << "Введите длину трубы:";
@@ -37,7 +37,7 @@ pipe NewPipe()
 	return pipe1;
 }
 
-KS NewKS()
+KS NewKS()                  //Функция создания новой компрессорной станции
 {
 	KS ks1;
 	cout << "Введите имя компрессорной станции:";
@@ -47,9 +47,9 @@ KS NewKS()
 	cin >> ks1.number_ceh >> ks1.number_ceh_inWork;
 	ks1.efficiency = (ks1.number_ceh_inWork / ks1.number_ceh) * 100;
 	return ks1;
-}
+}    
 
-int Menu()
+void Menu()          //Функция вывода меню, выводит список возможных действий пользователя
 {
 	cout << "Меню программы" << endl <<
 		"1-Добавить трубу" << endl <<
@@ -60,19 +60,10 @@ int Menu()
 		"6-Сохранить в файл" << endl <<
 		"7-Загрузить из файла" << endl <<
 		"8-Открыть меню" << endl <<
-		"0-Выход из программы" << endl<<
-		"Что вы хотите сделать?"<<endl;
-	int a;
-	cin >> a;
-	while (a < 0 || a > 8)
-	{
-		cout << "Введите верное число!" << endl;
-		cin >> a;
-	}
-	return a;
+		"0-Выход из программы" << endl;
 }
 
-int MakeStep()
+int MakeStep()      // Функция, возвращающая число-действие, которое хочет совершить пользователь
 {
 	cout << "Какое действие вы хотите сделать?" << endl;
 	int a;
@@ -85,49 +76,49 @@ int MakeStep()
 	return a;
 }
 
-bool ChangeStatus(bool b)
+bool ChangeStatus(bool b)   //Функция меняет статус переменной типа bool
 {
 	b = !b;
 	return b;
 }
 
-void DownloadSaves(pipe p[100],KS k[100]);
+void DownloadSaves(pipe p[100],KS k[100]);      //Объявление функции загрузки
 
-void SaveData(pipe p[100], KS k[100]);
+void SaveData(pipe p[100], KS k[100]);          //Объявление функции сохранения
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");
-	pipe pipes[100];
-	KS ks[100];
+	setlocale(LC_ALL, "Russian");                                        //Подключение русского языка
+	pipe pipes[100];                                                     //Массив для хранения труб
+	KS ks[100];                                                          //Массив для хранения КС
 	cout << "Вы хотите загрузить сохраненные данные? [y/n]" << endl;
-	char ch;
+	char ch;                                       
 	cin >> ch;
 	if (ch == 'y' || ch == '1')
-		DownloadSaves(pipes, ks);
+		DownloadSaves(pipes, ks);            //спрашиваем у пользователя, хочет ли он загрузить данные после предыдущего запуска программы
 	else if (ch == 'n' || ch == '0')
 		cout << " " << endl;
 	else
 		cout << "Ошибка! Вы можете загрузить данные позже, напечатав '7'" << " " << endl;
 	
 	int i;
-	ofstream outf;
-	int operation = Menu();
-	while (operation != 0)
+	Menu();                                  //показываем меню
+	int operation = MakeStep();              //Запрашиваем действие пользователя
+	while (operation != 0)                   //цикл закончится когда пользователь введёт 0
 	{
-		switch (operation)
+		switch (operation)                   //цикл для обработки операций, выбранных пользователем
 		{
 		case 1:
-			NumberPipe++;
-			pipes[NumberPipe] = NewPipe();
-			pipes[NumberPipe].id = NumberPipe;
+			NumberPipe++;                   //увеличиваем счётчик труб
+			pipes[NumberPipe] = NewPipe();  //записывааем в массив новую трубу
+			pipes[NumberPipe].id = NumberPipe;   
 			break;
 		case 2:
-			NumberKS++;
+			NumberKS++;                     //Тоже самое для КС
 			ks[NumberKS] = NewKS();
 			ks[NumberKS].id = NumberKS;
 			break;
-		case 3:
+		case 3:                                  //Вывод списка объектов в консоль
 			cout << "Список труб:" << endl;
 			if (NumberPipe == 0)
 			{
@@ -159,18 +150,18 @@ int main()
 				}
 			}
 			break;
-		case 4:
+		case 4:                                   //Редактируем статус "В ремонте" для трубы
 			cout << "Введите ID трубы, статус которой хотите редактировать:" << endl;
 			int b;
 			cin >> b;
-			while (b < 1 || b > NumberPipe)
+			while (b < 1 || b > NumberPipe)   //Проверка ввода
 			{
 				cout << "Такой трубы не существует! Введите верный ID" << endl;
 				cin >> b;
 			}
-			pipes[b].remont = ChangeStatus(pipes[b].remont);
+			pipes[b].remont = ChangeStatus(pipes[b].remont);   //Меняем статус
 			break;
-		case 5:
+		case 5:                //Рекдактирование КС
 			cout << "Введите ID компрессорной станции, которую хотите редактировать:" << endl;
 			int a;
 			cin >> a;
@@ -180,18 +171,18 @@ int main()
 				cin >> a;
 			}
 			cout << "Что именно вы хотите редактировать?" << endl;
-			int WhatToRedact;
+			int WhatToRedact;  //Переменная, в неё запишется число, отражающее то что хочет редактировать пользователь
 			do
 			{
 				cout << "1-редактировать имя" << endl << "2-редактировать кол-во цехов" << endl << "3-редактировать количество работающих цехов" << endl
-					<< "0-закончить редактирование" << endl;
+					<< "0-закончить редактирование" << endl;   //Меню редактирования
 				cin >> WhatToRedact;
-				while (WhatToRedact < 0 || WhatToRedact>3)
+				while (WhatToRedact < 0 || WhatToRedact>3)     //Проверяем корректность ввода
 				{
 					cout << "Такого действия не существует, введите корректное" << endl;
 					cin >> WhatToRedact;
 				}
-				switch (WhatToRedact)
+				switch (WhatToRedact)   //редактируем нужный параметр, в зависимости от переменной
 				{
 				case 1:
 					cout << "Введите новое имя КС:" << endl;
@@ -211,15 +202,15 @@ int main()
 					break;
 				}
 
-			} while (WhatToRedact != 0);
+			} while (WhatToRedact != 0);   //Выходим из цикла, когда пользователь введёт 0
 			break;
 		case 6:
-			SaveData(pipes, ks);
+			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
 			break;
 		case 7:
-			DownloadSaves(pipes, ks);
+			DownloadSaves(pipes, ks);    //загрузка данных из файла
 			break;
-		case 8:
+		case 8:                          //Показ меню
 			cout << "Меню программы" << endl <<
 				"1-Добавить трубу" << endl <<
 				"2-Добавить компрессорную станцию" << endl <<
@@ -231,27 +222,26 @@ int main()
 				"8-Открыть меню" << endl <<
 				"0-Выход из программы" << endl;
 			break;
-	
 	    }
-		operation = MakeStep();
+		operation = MakeStep();   //В конце цикла просим снова ввести число
     }
 	return 0;
 }
 
-void SaveData(pipe p[100], KS k[100])
+void SaveData(pipe p[100], KS k[100])       //Описание функции сохранения
 {
 	int i;
-	outf.open("Saves.txt");
-	if (NumberPipe == 0 && NumberKS == 0)
+	outf.open("Saves.txt");             
+	if (NumberPipe == 0 && NumberKS == 0)   //Когда массивы данных труб и КС пусты, сохранения не произойдёт 
 	{
 		cout << "Нет данных для сохранения!" << endl;
 	}
 	else
 	{
-		outf << NumberPipe << endl;
-		outf << NumberKS << endl;
+		outf << NumberPipe << endl;     //В первую строку выводим кол-во труб
+		outf << NumberKS << endl;       //Во вторую кол-во КС
 		i = 1;
-		while (i <= NumberPipe)
+		while (i <= NumberPipe)         //Выводим параметры каждой трубы по списку 
 		{
 			outf << p[i].id << endl;
 			outf << p[i].length << endl;
@@ -260,7 +250,7 @@ void SaveData(pipe p[100], KS k[100])
 			i++;
 		}
 		i = 1;
-		while (i <= NumberKS)
+		while (i <= NumberKS)           //Выводим параметры каждой КС по списку 
 		{
 			outf << k[i].id << endl;
 			outf << k[i].name << endl;
@@ -274,20 +264,20 @@ void SaveData(pipe p[100], KS k[100])
 	outf.close();
 }
 
-void DownloadSaves(pipe p[100], KS k[100])
+void DownloadSaves(pipe p[100], KS k[100])         //Описание функции загрузки   
 {
 	int i;
 	inf.open("Saves.txt");
-	inf >> NumberPipe;
-	inf >> NumberKS;
-	if (NumberPipe == 0 && NumberKS == 0)
+	inf >> NumberPipe;                       //Считываем количество труб в переменную
+	inf >> NumberKS;                         //Теперь кол-во КС
+	if (NumberPipe == 0 && NumberKS == 0)    //Если значения нулевые не загружаем данные 
 	{
 		cout << "Не удалось загрузить данные, файл пуст!" << endl;
 	}
 	else
 	{
 		i = 1;
-		while (i <= NumberPipe)
+		while (i <= NumberPipe)   //По порядку записываем данные в массив труб
 		{
 			inf >> p[i].id;
 			inf >> p[i].length;
@@ -296,7 +286,7 @@ void DownloadSaves(pipe p[100], KS k[100])
 			i++;
 		}
 		i = 1;
-		while (i <= NumberKS)
+		while (i <= NumberKS)    //По порядку записываем данные в массив КС
 		{
 			inf >> k[i].id;
 			inf >> k[i].name;
