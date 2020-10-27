@@ -21,19 +21,15 @@ struct KS                //Описание структуры компрессорной станции
 	double efficiency;
 };
 
-template <typename T>
-T GetNumber(T min, T max)
+template <typename T>              //Шаблон
+T GetNumber(T min, T max)          //Функция с перегрузкой для проверки верного ввода с клавиутуры
 {
 	T a;
-	cin.clear();
-	cin.ignore(33333, '\n');
-	cin >> a;
-	while (cin.fail() || a < min || a > max)
+	while ((cin >> a).fail() || a < min || a > max)
 	{
 		cin.clear();
 		cin.ignore(33333, '\n');
 		cout << "Введите корректное число!" << endl;
-		cin >> a;
 	}
 	return a;
 }
@@ -52,7 +48,7 @@ void NewPipe(vector<pipe>& p)          //Функция создания новой трубы
 	p1.diametr = GetNumber(1, 10000000);
 	p1.id = 0;
 	p1.remont = false;
-	p.push_back(p1);
+	p.push_back(p1);               //Добавляем в конец вектора структур
 	p[p.size() - 1].id = p.size();
 }
 
@@ -60,25 +56,25 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 {
 	KS ks1;
 	cout << "Введите имя компрессорной станции:";
-	cin.ignore(32767, '\n');                                       
-	getline(cin, ks1.name);
-	cout << "Введите общее кол-во цехов и цехов в работе через пробел:";
-	do
+	cin >> ks1.name;
+	do                                      //Проверяем в цикле, чтобы работающих цехов было не больше общего кол-ва цехов
 	{
+		cout << "Введите общее кол-во цехов:";
 		ks1.number_ceh = GetNumber(1.0, 100000.0);
+		cout << "Введите кол-во цехов в работе:";
 		ks1.number_ceh_inWork = GetNumber(1.0, 100000.0);
 		if (ks1.number_ceh < ks1.number_ceh_inWork)
 		{
 			cout << "Введите корректные данные!" << endl;
 		}
-	} while (ks1.number_ceh <= ks1.number_ceh_inWork);
+	} while (ks1.number_ceh < ks1.number_ceh_inWork);
 	ks1.efficiency = (ks1.number_ceh_inWork / ks1.number_ceh) * 100;
 	ks1.id = 0;
-	ks.push_back(ks1);
+	ks.push_back(ks1);                       //добавляем переменную в конец вектора
 	ks[ks.size() - 1].id = ks.size();
 }    
 
-ostream& operator <<(ostream& out, pipe& p)
+ostream& operator <<(ostream& out,const pipe& p)    //Перегрузка оператора вывода для структур труб
 {
 	out << "ID трубы:" << p.id << endl;
 	out << "Длинна трубы:" << p.length << endl;
@@ -87,7 +83,7 @@ ostream& operator <<(ostream& out, pipe& p)
 	return out;
 }
 
-ostream& operator <<(ostream& out, KS& ks)
+ostream& operator <<(ostream& out,const KS& ks)       //Перегрузка оператора вывода для структур кс
 {
 	out << "ID КС:" << ks.id << endl;
 	out << "Имя КС:" << ks.name << endl;
@@ -96,11 +92,11 @@ ostream& operator <<(ostream& out, KS& ks)
 	return out;
 }
 
-void PrintData(vector<pipe> p,vector<KS> ks)
+void PrintData(const vector<pipe> p,const vector<KS> ks)   //Функция для вывода данных в консоль
 {
 	int i;
 	cout << "Список труб:" << endl;
-	if (p.size() == 0)
+	if (p.size() == 0)       //Если вектор труб пуст, ничего не выводим
 	{
 		cout << "Список труб пуст" << endl << " " << endl;
 	}
@@ -108,7 +104,7 @@ void PrintData(vector<pipe> p,vector<KS> ks)
 	{
 		for (i = 0; i < p.size(); i++)
 		{
-			cout << p[i] << endl;
+			cout << p[i] << endl;      //Используем перегрузку оператора вывода
 		}
 	}
 	cout << "Список компрессорных станций:" << endl;
@@ -125,7 +121,7 @@ void PrintData(vector<pipe> p,vector<KS> ks)
 	}
 }
 
-void RedactPipe(vector<pipe>& p)
+void RedactPipe(vector<pipe>& p)            //Функция для редактирования трубы
 {
 	if (p.size() == 0)
 	{
@@ -135,12 +131,12 @@ void RedactPipe(vector<pipe>& p)
 	{
 		cout << "Введите ID трубы, статус которой хотите редактировать (диапазон " << 1 << "-" << p.size() << ")" << endl;
 		int b = p.size();
-		int id = GetNumber(1, b);
-		ChangeStatus(p[id-1].remont);
+		int id = GetNumber(1, b)-1;
+		ChangeStatus(p[id].remont);
 	}
 }
 
-void RedactKS(vector<KS>& ks)
+void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 {
 	if (ks.size() == 0)
 	{
@@ -186,7 +182,7 @@ void RedactKS(vector<KS>& ks)
 	}
 }
 
-void SaveData(vector<pipe> p, vector<KS> ks)       //Описание функции сохранения
+void SaveData(const vector<pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
 {
 	ofstream outf;
 	int i;
@@ -198,8 +194,8 @@ void SaveData(vector<pipe> p, vector<KS> ks)       //Описание функции сохранения
 	else if (outf.is_open())
 	{
 		outf << p.size() << endl;     //В первую строку выводим кол-во труб
-		outf << ks.size() << endl;
-		if (p.size() > 0)                                     //Во вторую кол-во КС
+		outf << ks.size() << endl;    //Во вторую кол-во КС
+		if (p.size() > 0)                                     
 			for (i = 0; i < p.size(); i++)           //Выводим параметры каждой трубы по списку 
 			{
 				outf << p[i].id << endl;
@@ -290,29 +286,20 @@ int MakeStep()      // Функция, возвращающая число-действие, которое хочет совер
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");                                        //Подключение русского языка
-	vector <pipe> pipes;                                                     //Массив для хранения труб
-	vector <KS> ks;                                                          //Массив для хранения КС
-	cout << "Вы хотите загрузить сохраненные данные? [y/n]" << endl;
-	char ch;                                       
-	cin >> ch;
-	if (ch == 'y' || ch == 'Y')
-		DownloadSaves(pipes, ks);            //спрашиваем у пользователя, хочет ли он загрузить данные после предыдущего запуска программы
-	else if (ch == 'n' || ch == 'N')
-		cout << " " << endl;
-	else
-		cout << "Ошибка! Вы можете загрузить данные позже, напечатав '7'" << " " << endl;
-	Menu();                                  //показываем меню
-	int operation = MakeStep();              //Запрашиваем действие пользователя
-	while (1)                   //цикл закончится когда пользователь введёт 0
+	setlocale(LC_ALL, "Russian");              //Подключение русского языка
+	vector <pipe> pipes;                       //вектор для хранения труб
+	vector <KS> ks;                            //вектор для хранения КС
+	Menu();                                  //показываем меню            
+	while (1)                   
 	{
+		int operation = MakeStep();          //Запрашиваем действие пользователя
 		switch (operation)                   //цикл для обработки операций, выбранных пользователем
 		{
 		case 1:                  
-			NewPipe(pipes);  //записывааем в массив новую трубу   
+			NewPipe(pipes);  //Создаем новую трубу
 			break;
 		case 2:
-			NewKS(ks);
+			NewKS(ks);        //Создаем новую кс
 			break;
 		case 3:                                  //Вывод списка объектов в консоль
 			PrintData(pipes, ks);
@@ -336,7 +323,6 @@ int main()
 			return 0;
 			break;
 	    }
-		operation = MakeStep();   //В конце цикла просим снова ввести число
     }
 }
 
