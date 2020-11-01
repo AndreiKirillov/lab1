@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "Pipe.h"
+#include "KS.h"
 using namespace std;
 
 struct pipe      //Описание структуры трубы
@@ -21,14 +23,13 @@ struct KS                //Описание структуры компрессорной станции
 	double efficiency;
 };
 
-template <typename T>              //Шаблон
-T GetNumber(T min, T max)          //Функция с перегрузкой для проверки верного ввода с клавиутуры
+double GetNumber(double min, double max)          //Функция для проверки верного ввода с клавиутуры
 {
-	T a;
+	double a;
 	while ((cin >> a).fail() || a < min || a > max)
 	{
 		cin.clear();
-		cin.ignore(33333, '\n');
+		cin.ignore(32767, '\n');
 		cout << "Введите корректное число!" << endl;
 	}
 	return a;
@@ -48,7 +49,7 @@ void NewPipe(vector<pipe>& p)          //Функция создания новой трубы
 	p1.diametr = GetNumber(1, 10000000);
 	p1.id = 0;
 	p1.remont = false;
-	p.push_back(p1);               //Добавляем в конец вектора структур
+	p.push_back(p1);               //Добавляем в конец вектора труб
 	p[p.size() - 1].id = p.size();
 }
 
@@ -56,7 +57,8 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 {
 	KS ks1;
 	cout << "Введите имя компрессорной станции:";
-	cin >> ks1.name;
+	cin.ignore(32767, '\n');
+	getline(cin, ks1.name);
 	do                                      //Проверяем в цикле, чтобы работающих цехов было не больше общего кол-ва цехов
 	{
 		cout << "Введите общее кол-во цехов:";
@@ -92,7 +94,7 @@ ostream& operator <<(ostream& out,const KS& ks)       //Перегрузка оператора выв
 	return out;
 }
 
-void PrintData(const vector<pipe> p,const vector<KS> ks)   //Функция для вывода данных в консоль
+void PrintData(const vector<pipe>& p,const vector<KS>& ks)   //Функция для вывода данных в консоль
 {
 	int i;
 	cout << "Список труб:" << endl;
@@ -151,7 +153,8 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 		int WhatToRedact;  //Переменная, в неё запишется число, отражающее то что хочет редактировать пользователь
 		do
 		{
-			cout << "1-редактировать имя" << endl << "2-редактировать кол-во цехов" << endl << "3-редактировать количество работающих цехов" << endl
+			cout << "1-редактировать имя" << endl << "2-редактировать кол-во цехов" << endl 
+				<< "3-редактировать количество работающих цехов" << endl
 				<< "0-закончить редактирование" << endl;   //Меню редактирования
 			WhatToRedact=GetNumber(0,3);
 			switch (WhatToRedact)   //редактируем нужный параметр, в зависимости от переменной
