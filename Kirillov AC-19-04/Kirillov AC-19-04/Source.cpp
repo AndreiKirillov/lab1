@@ -19,22 +19,15 @@ double GetNumber(double min, double max)          //Функция для проверки верного
 	return a;
 }
 
-void ChangeStatus(bool& b)   //Функция меняет статус переменной типа bool
+void NewPipe(vector<Pipe>& p)          //Функция создания новой трубы
 {
-	b = !b;
-}
-
-void NewPipe(vector<pipe>& p)          //Функция создания новой трубы
-{
-	pipe p1;
+	Pipe p1;
 	cout << "Введите длину трубы:";
-	p1.length = GetNumber(1, 10000000);
+	p1.SetLength(GetNumber(1, 10000000));
 	cout << "Введите диаметр трубы:";
-	p1.diametr = GetNumber(1, 10000000);
-	p1.id = 0;
-	p1.remont = false;
+	p1.SetDiametr(GetNumber(1, 10000000));
 	p.push_back(p1);               //Добавляем в конец вектора труб
-	p[p.size() - 1].id = p.size();
+	p[p.size() - 1].SetID(p.size());
 }
 
 void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорной станции
@@ -45,31 +38,31 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 	ks1.SetNumber_ceh(GetNumber(1.0, 100000.0));
 	cout << "Введите кол-во цехов в работе:";
 	ks1.SetNumber_ceh_inWork(GetNumber(1.0, 100000.0));
-	ks1.CheckNumber_of_ceh(GetNumber(1.0, 100000.0));
+	ks1.CheckNumber_of_ceh();
 	ks1.SetEfficiency();
 	ks.push_back(ks1);                       //добавляем переменную в конец вектора
 	ks[ks.size() - 1].SetID(ks.size());
 }    
 
-ostream& operator <<(ostream& out,const pipe& p)    //Перегрузка оператора вывода для структур труб
+ostream& operator <<(ostream& out,const Pipe& p)    //Перегрузка оператора вывода для структур труб
 {
-	out << "ID трубы:" << p.id << endl;
-	out << "Длинна трубы:" << p.length << endl;
-	out << "Диаметр трубы:" << p.diametr << endl;
-	out << "Статус ремонта:" << p.remont << endl << " " << endl;
+	out << "ID трубы: " << p.GetID();
+	out << "\tДлинна трубы: " << p.GetLength();
+	out << "\tДиаметр трубы: " << p.GetDiametr();
+	out << "\tСтатус ремонта: " << p.GetRemont() << endl << " " << endl;
 	return out;
 }
 
 ostream& operator <<(ostream& out,const KS& ks)       //Перегрузка оператора вывода для структур кс
 {
-	out << "ID КС:" << ks.GetID << endl;
-	out << "Имя КС:" << ks.GetName() << endl;
-	out << "Работающие цеха:" << ks.number_ceh_inWork << "/" << ks.number_ceh << endl;
-	out << "Эффективность компрессорной станции" << ks.efficiency << "%" << endl << " " << endl;
+	out << "ID КС: " << ks.GetID();
+	out << "\tИмя КС: " << ks.GetName();
+	out << "\tРаботающие цеха: " << ks.GetNumber_ceh_inWork() << "/" << ks.GetNumber_ceh();
+	out << "\tЭффективность КС: " << ks.GetEfficiency() << "%" << endl << " " << endl;
 	return out;
 }
 
-void PrintData(const vector<pipe>& p,const vector<KS>& ks)   //Функция для вывода данных в консоль
+void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывода данных в консоль
 {
 	int i;
 	cout << "Список труб:" << endl;
@@ -98,7 +91,7 @@ void PrintData(const vector<pipe>& p,const vector<KS>& ks)   //Функция для вывод
 	}
 }
 
-void RedactPipe(vector<pipe>& p)            //Функция для редактирования трубы
+void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 {
 	if (p.size() == 0)
 	{
@@ -107,9 +100,8 @@ void RedactPipe(vector<pipe>& p)            //Функция для редактирования трубы
 	else
 	{
 		cout << "Введите ID трубы, статус которой хотите редактировать (диапазон " << 1 << "-" << p.size() << ")" << endl;
-		int b = p.size();
-		int id = GetNumber(1, b)-1;
-		ChangeStatus(p[id].remont);
+		int id = GetNumber(1, p.size());
+		p[id-1].ChangeStatus();
 	}
 }
 
@@ -122,8 +114,7 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 	else
 	{
 		cout << "Введите ID компрессорной станции, которую хотите редактировать(диапазон " << 1 << "-" << ks.size() << ")" << endl;
-		int b = ks.size();
-		int id = GetNumber(1, b)-1;
+		int id = GetNumber(1, ks.size())-1;
 		cout << "Что именно вы хотите редактировать?" << endl;
 		int WhatToRedact;  //Переменная, в неё запишется число, отражающее то что хочет редактировать пользователь
 		do
@@ -135,23 +126,19 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 			switch (WhatToRedact)   //редактируем нужный параметр, в зависимости от переменной
 			{
 			case 1:
-				cout << "Введите новое имя КС:" << endl;
-				cin >> ks[id].name;
+				ks[id].SetName();
 				break;
 			case 2:
 				cout << "Введите новое кол-во цехов КС:" << endl;
-				ks[id].number_ceh=GetNumber(1,100000);
-				if (ks[id].number_ceh < ks[id].number_ceh_inWork)
-				{
-					cout << "Также нужно уменьшить число работающих цехов, введите новое значение" << endl;
-					ks[id].number_ceh_inWork = GetNumber(1.0, ks[id].number_ceh);
-				}
-				ks[id].efficiency = (ks[id].number_ceh_inWork / ks[id].number_ceh) * 100;
+				ks[id].SetNumber_ceh(GetNumber(1,100000));
+				ks[id].CheckNumber_of_ceh();
+				ks[id].SetEfficiency();
 				break;
 			case 3:
 				cout << "Введите новое кол-во работающих цехов КС:" << endl;
-				ks[id].number_ceh_inWork = GetNumber(1.0, ks[id].number_ceh);
-				ks[id].efficiency = (ks[id].number_ceh_inWork / ks[id].number_ceh) * 100;
+				ks[id].SetNumber_ceh_inWork(GetNumber(1.0, ks[id].GetNumber_ceh()));
+				ks[id].CheckNumber_of_ceh();
+				ks[id].SetEfficiency();
 				break;
 			case 0:
 				break;
@@ -160,7 +147,7 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 	}
 }
 
-void SaveData(const vector<pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
+void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
 {
 	ofstream outf;
 	int i;
@@ -176,26 +163,26 @@ void SaveData(const vector<pipe>& p,const vector<KS>& ks)       //Описание функц
 		if (p.size() > 0)                                     
 			for (i = 0; i < p.size(); i++)           //Выводим параметры каждой трубы по списку 
 			{
-				outf << p[i].id << endl;
-				outf << p[i].length << endl;
-				outf << p[i].diametr << endl;
-				outf << p[i].remont << endl;
+				outf << p[i].GetID() << endl;
+				outf << p[i].GetLength() << endl;
+				outf << p[i].GetDiametr() << endl;
+				outf << p[i].GetRemont() << endl;
 			}
 		if (ks.size() > 0)
 			for (i = 0; i < ks.size(); i++)           //Выводим параметры каждой КС по списку 
 			{
-				outf << ks[i].id << endl;
-				outf << ks[i].name << endl;
-				outf << ks[i].number_ceh << endl;
-				outf << ks[i].number_ceh_inWork << endl;
-				outf << ks[i].efficiency << endl;
+				outf << ks[i].GetID() << endl;
+				outf << ks[i].GetName() << endl;
+				outf << ks[i].GetNumber_ceh() << endl;
+				outf << ks[i].GetNumber_ceh_inWork() << endl;
+				outf << ks[i].GetEfficiency() << endl;
 			}
 		cout << "Данные успешно сохранены!" << endl;
 	};
 	outf.close();
 }
 
-void DownloadSaves(vector<pipe>& p, vector<KS>& ks)         //Описание функции загрузки   
+void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции загрузки   
 {
 	ifstream inf;
 	int i=0;
@@ -218,21 +205,32 @@ void DownloadSaves(vector<pipe>& p, vector<KS>& ks)         //Описание функции з
 			{
 				for (i = 0; i < p.size(); i++)   //По порядку записываем данные в массив труб
 				{
-					inf >> p[i].id;
-					inf >> p[i].length;
-					inf >> p[i].diametr;
-					inf >> p[i].remont;
+					
+				/*	inf >> temp;
+					p[i].SetID(temp);
+					inf >> temp;
+					p[i].SetLength(temp);
+					inf >> temp;
+					p[i].SetDiametr(temp);
+					inf >> temp;
+					p[i].SetRemont(temp);*/
 				}
 			}
 			if (ks.size() > 0)
 			{
 				for (i = 0; i < ks.size(); i++)    //По порядку записываем данные в массив КС
 				{
-					inf >> ks[i].id;
-					inf >> ks[i].name;
-					inf >> ks[i].number_ceh;
-					inf >> ks[i].number_ceh_inWork;
-					inf >> ks[i].efficiency;
+				/*	auto temp;
+					inf >> temp;
+					ks[i].SetID(temp);
+					inf >> temp;
+					ks[i].SetName(temp);
+					inf >> temp;
+					ks[i].SetNumber_ceh(temp);
+					inf >> temp;
+					ks[i].SetNumber_ceh_inWork(temp);
+					inf >> temp;
+					ks[i].SetEfficiency(temp);*/
 				}
 			}
 		}
@@ -265,7 +263,7 @@ int MakeStep()      // Функция, возвращающая число-действие, которое хочет совер
 int main()
 {
 	setlocale(LC_ALL, "Russian");              //Подключение русского языка
-	vector <pipe> pipes;                       //вектор для хранения труб
+	vector <Pipe> pipes;                       //вектор для хранения труб
 	vector <KS> ks;                            //вектор для хранения КС
 	Menu();                                  //показываем меню            
 	while (1)                   

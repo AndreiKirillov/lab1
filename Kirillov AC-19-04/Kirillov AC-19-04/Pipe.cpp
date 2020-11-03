@@ -38,7 +38,17 @@ void Pipe::SetDiametr(int new_diametr)
 	diametr = new_diametr;
 }
 
-void Pipe::ChangeStatus()
+bool Pipe::GetRemont() const
 {
-	!remont;
+	return remont;
+}
+
+void Pipe::SetRemont(bool new_status)
+{
+	remont = new_status;
+}
+
+void Pipe::ChangeStatus()   //Меняем статус ремонта
+{
+	remont=!remont;
 }

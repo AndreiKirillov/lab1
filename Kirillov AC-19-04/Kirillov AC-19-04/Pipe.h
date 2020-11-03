@@ -14,6 +14,8 @@ public:
 	void SetLength(int new_length);
 	int GetDiametr() const;
 	void SetDiametr(int new_diametr);
+	bool GetRemont() const;
+	void SetRemont(bool new_status);
 	void ChangeStatus();
 };
 

@@ -1,4 +1,5 @@
 #include "KS.h"
+#include "Source.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -62,18 +63,18 @@ void KS::SetEfficiency()
 	efficiency= (number_ceh_inWork / number_ceh) * 100;
 }
 
-void KS::CheckNumber_of_ceh(double CorrectNumber)
+void KS::CheckNumber_of_ceh()
 {
 	do                                      //ѕровер€ем в цикле, чтобы работающих цехов было не больше общего кол-ва цехов
 	{
 		if (number_ceh < number_ceh_inWork)
 		{
 			cout << "¬ведите корректные данные!\n" << endl;
+			cout << "¬ведите общее кол-во цехов:" << endl;
+			SetNumber_ceh(GetNumber(1.0, 100000.0));
+			cout << "¬ведите кол-во цехов в работе:" << endl;
+			SetNumber_ceh_inWork(GetNumber(1.0, 100000.0));
 		}
-		cout << "¬ведите общее кол-во цехов:";
-		SetNumber_ceh(CorrectNumber);
-		cout << "¬ведите кол-во цехов в работе:";
-		SetNumber_ceh_inWork(CorrectNumber);
 	} while (number_ceh < number_ceh_inWork);
 }
 

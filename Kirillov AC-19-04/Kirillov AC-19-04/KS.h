@@ -22,6 +22,6 @@ public:
 	void SetNumber_ceh_inWork(double new_value);
 	double GetEfficiency() const;
 	void SetEfficiency();
-	void CheckNumber_of_ceh(double CorrectNumber);
+	void CheckNumber_of_ceh();
 };
 
