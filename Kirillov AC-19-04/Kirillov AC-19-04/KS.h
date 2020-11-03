@@ -16,9 +16,12 @@ public:
 	void SetID(int new_id);
 	string GetName() const;
 	void SetName();
-	double GetNuber_ceh() const;
+	double GetNumber_ceh() const;
 	void SetNumber_ceh(double new_value);
 	double GetNumber_ceh_inWork() const;
 	void SetNumber_ceh_inWork(double new_value);
+	double GetEfficiency() const;
+	void SetEfficiency();
+	void CheckNumber_of_ceh(double CorrectNumber);
 };
 

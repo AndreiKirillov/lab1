@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="KS.h" />
     <ClInclude Include="Pipe.h" />
+    <ClInclude Include="Source.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

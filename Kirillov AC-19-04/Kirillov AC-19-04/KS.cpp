@@ -32,7 +32,7 @@ void KS::SetName()
 	name = NewName;
 }
 
-double KS::GetNuber_ceh() const
+double KS::GetNumber_ceh() const
 {
 	return number_ceh;
 }
@@ -50,6 +50,31 @@ double KS::GetNumber_ceh_inWork() const
 void KS::SetNumber_ceh_inWork(double new_value)
 {
 	number_ceh_inWork = new_value;
+}
+
+double KS::GetEfficiency() const
+{
+	return efficiency;
+}
+
+void KS::SetEfficiency()
+{
+	efficiency= (number_ceh_inWork / number_ceh) * 100;
+}
+
+void KS::CheckNumber_of_ceh(double CorrectNumber)
+{
+	do                                      //Проверяем в цикле, чтобы работающих цехов было не больше общего кол-ва цехов
+	{
+		if (number_ceh < number_ceh_inWork)
+		{
+			cout << "Введите корректные данные!\n" << endl;
+		}
+		cout << "Введите общее кол-во цехов:";
+		SetNumber_ceh(CorrectNumber);
+		cout << "Введите кол-во цехов в работе:";
+		SetNumber_ceh_inWork(CorrectNumber);
+	} while (number_ceh < number_ceh_inWork);
 }
 
 string KS::GetName() const

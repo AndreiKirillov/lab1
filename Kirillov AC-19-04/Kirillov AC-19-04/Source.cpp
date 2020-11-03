@@ -4,24 +4,8 @@
 #include <vector>
 #include "Pipe.h"
 #include "KS.h"
+#include "Source.h"
 using namespace std;
-
-//struct pipe      //Описание структуры трубы
-//{
-//	int id;
-//	int length;
-//	int diametr;
-//	bool remont;
-//};
-//
-//struct KS                //Описание структуры компрессорной станции
-//{
-//	int id;
-//	string name;
-//	double number_ceh;
-//	double number_ceh_inWork;
-//	double efficiency;
-//};
 
 double GetNumber(double min, double max)          //Функция для проверки верного ввода с клавиутуры
 {
@@ -56,24 +40,15 @@ void NewPipe(vector<pipe>& p)          //Функция создания новой трубы
 void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорной станции
 {
 	KS ks1;
-	cout << "Введите имя компрессорной станции:";
-	cin.ignore(32767, '\n');
-	getline(cin, ks1.name);
-	do                                      //Проверяем в цикле, чтобы работающих цехов было не больше общего кол-ва цехов
-	{
-		cout << "Введите общее кол-во цехов:";
-		ks1.number_ceh = GetNumber(1.0, 100000.0);
-		cout << "Введите кол-во цехов в работе:";
-		ks1.number_ceh_inWork = GetNumber(1.0, 100000.0);
-		if (ks1.number_ceh < ks1.number_ceh_inWork)
-		{
-			cout << "Введите корректные данные!" << endl;
-		}
-	} while (ks1.number_ceh < ks1.number_ceh_inWork);
-	ks1.efficiency = (ks1.number_ceh_inWork / ks1.number_ceh) * 100;
-	ks1.id = 0;
+	ks1.SetName();
+	cout << "Введите общее кол-во цехов:";
+	ks1.SetNumber_ceh(GetNumber(1.0, 100000.0));
+	cout << "Введите кол-во цехов в работе:";
+	ks1.SetNumber_ceh_inWork(GetNumber(1.0, 100000.0));
+	ks1.CheckNumber_of_ceh(GetNumber(1.0, 100000.0));
+	ks1.SetEfficiency();
 	ks.push_back(ks1);                       //добавляем переменную в конец вектора
-	ks[ks.size() - 1].id = ks.size();
+	ks[ks.size() - 1].SetID(ks.size());
 }    
 
 ostream& operator <<(ostream& out,const pipe& p)    //Перегрузка оператора вывода для структур труб
@@ -87,8 +62,8 @@ ostream& operator <<(ostream& out,const pipe& p)    //Перегрузка оператора вывод
 
 ostream& operator <<(ostream& out,const KS& ks)       //Перегрузка оператора вывода для структур кс
 {
-	out << "ID КС:" << ks.id << endl;
-	out << "Имя КС:" << ks.name << endl;
+	out << "ID КС:" << ks.GetID << endl;
+	out << "Имя КС:" << ks.GetName() << endl;
 	out << "Работающие цеха:" << ks.number_ceh_inWork << "/" << ks.number_ceh << endl;
 	out << "Эффективность компрессорной станции" << ks.efficiency << "%" << endl << " " << endl;
 	return out;
