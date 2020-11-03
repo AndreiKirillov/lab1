@@ -6,22 +6,22 @@
 #include "KS.h"
 using namespace std;
 
-struct pipe      //Описание структуры трубы
-{
-	int id;
-	int length;
-	int diametr;
-	bool remont;
-};
-
-struct KS                //Описание структуры компрессорной станции
-{
-	int id;
-	string name;
-	double number_ceh;
-	double number_ceh_inWork;
-	double efficiency;
-};
+//struct pipe      //Описание структуры трубы
+//{
+//	int id;
+//	int length;
+//	int diametr;
+//	bool remont;
+//};
+//
+//struct KS                //Описание структуры компрессорной станции
+//{
+//	int id;
+//	string name;
+//	double number_ceh;
+//	double number_ceh_inWork;
+//	double efficiency;
+//};
 
 double GetNumber(double min, double max)          //Функция для проверки верного ввода с клавиутуры
 {
