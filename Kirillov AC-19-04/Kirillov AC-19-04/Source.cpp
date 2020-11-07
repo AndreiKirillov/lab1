@@ -44,14 +44,14 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 	ks[ks.size() - 1].SetID(ks.size());
 }    
 
-ostream& operator <<(ostream& out,const Pipe& p)    //Перегрузка оператора вывода для структур труб
-{
-	out << "ID трубы: " << p.GetID();
-	out << "\tДлинна трубы: " << p.GetLength();
-	out << "\tДиаметр трубы: " << p.GetDiametr();
-	out << "\tСтатус ремонта: " << p.GetRemont() << endl << " " << endl;
-	return out;
-}
+//ostream& operator <<(ostream& out,const Pipe& p)    //Перегрузка оператора вывода для структур труб
+//{
+//	out << "ID трубы: " << p.GetID();
+//	out << "\tДлинна трубы: " << p.GetLength();
+//	out << "\tДиаметр трубы: " << p.GetDiametr();
+//	out << "\tСтатус ремонта: " << p.GetRemont() << endl << " " << endl;
+//	return out;
+//}
 
 ostream& operator <<(ostream& out,const KS& ks)       //Перегрузка оператора вывода для структур кс
 {

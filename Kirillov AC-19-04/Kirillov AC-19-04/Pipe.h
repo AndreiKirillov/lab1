@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 class Pipe
 {
 private:
@@ -17,5 +19,7 @@ public:
 	bool GetRemont() const;
 	void SetRemont(bool new_status);
 	void ChangeStatus();
+	friend std::ostream& operator <<(std::ostream& out, const Pipe& p);
+	
 };
 

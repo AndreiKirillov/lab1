@@ -1,4 +1,5 @@
 #include "Pipe.h"
+#include <iostream>
 
 Pipe::Pipe()
 {
@@ -51,4 +52,13 @@ void Pipe::SetRemont(bool new_status)
 void Pipe::ChangeStatus()   //Меняем статус ремонта
 {
 	remont=!remont;
+}
+
+std::ostream& operator <<(std::ostream& out, const Pipe& p)    //Перегрузка оператора вывода для структур труб
+{
+	out << "ID трубы: " << p.id;
+	out << "\tДлинна трубы: " << p.length;
+	out << "\tДиаметр трубы: " << p.diametr;
+	out << "\tСтатус ремонта: " << p.remont;
+	return out;
 }
