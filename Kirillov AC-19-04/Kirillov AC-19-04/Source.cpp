@@ -44,24 +44,6 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 	ks[ks.size() - 1].SetID(ks.size());
 }    
 
-//ostream& operator <<(ostream& out,const Pipe& p)    //Перегрузка оператора вывода для структур труб
-//{
-//	out << "ID трубы: " << p.GetID();
-//	out << "\tДлинна трубы: " << p.GetLength();
-//	out << "\tДиаметр трубы: " << p.GetDiametr();
-//	out << "\tСтатус ремонта: " << p.GetRemont() << endl << " " << endl;
-//	return out;
-//}
-
-ostream& operator <<(ostream& out,const KS& ks)       //Перегрузка оператора вывода для структур кс
-{
-	out << "ID КС: " << ks.GetID();
-	out << "\tИмя КС: " << ks.GetName();
-	out << "\tРаботающие цеха: " << ks.GetNumber_ceh_inWork() << "/" << ks.GetNumber_ceh();
-	out << "\tЭффективность КС: " << ks.GetEfficiency() << "%" << endl << " " << endl;
-	return out;
-}
-
 void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывода данных в консоль
 {
 	int i;
@@ -159,24 +141,15 @@ void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функц
 	else if (outf.is_open())
 	{
 		outf << p.size() << endl;     //В первую строку выводим кол-во труб
-		outf << ks.size() << endl;    //Во вторую кол-во КС
-		if (p.size() > 0)                                     
-			for (i = 0; i < p.size(); i++)           //Выводим параметры каждой трубы по списку 
-			{
-				outf << p[i].GetID() << endl;
-				outf << p[i].GetLength() << endl;
-				outf << p[i].GetDiametr() << endl;
-				outf << p[i].GetRemont() << endl;
-			}
-		if (ks.size() > 0)
-			for (i = 0; i < ks.size(); i++)           //Выводим параметры каждой КС по списку 
-			{
-				outf << ks[i].GetID() << endl;
-				outf << ks[i].GetName() << endl;
-				outf << ks[i].GetNumber_ceh() << endl;
-				outf << ks[i].GetNumber_ceh_inWork() << endl;
-				outf << ks[i].GetEfficiency() << endl;
-			}
+		outf << ks.size() << endl;    //Во вторую кол-во КС                                    
+		for (i = 0; i < p.size(); i++)           //Выводим параметры каждой трубы по списку 
+		{
+			outf << p[i];
+		}
+		for (i = 0; i < ks.size(); i++)           //Выводим параметры каждой КС по списку 
+		{
+			outf << ks[i];
+		}
 		cout << "Данные успешно сохранены!" << endl;
 	};
 	outf.close();
@@ -201,37 +174,13 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции з
 		{
 			p.resize(SizePipes);
 			ks.resize(SizeKS);
-			if (p.size() > 0)
+			for (i = 0; i < p.size(); i++)   //По порядку записываем данные в массив труб
 			{
-				for (i = 0; i < p.size(); i++)   //По порядку записываем данные в массив труб
-				{
-					
-				/*	inf >> temp;
-					p[i].SetID(temp);
-					inf >> temp;
-					p[i].SetLength(temp);
-					inf >> temp;
-					p[i].SetDiametr(temp);
-					inf >> temp;
-					p[i].SetRemont(temp);*/
-				}
+				inf >> p[i];
 			}
-			if (ks.size() > 0)
+			for (i = 0; i < ks.size(); i++)    //По порядку записываем данные в массив КС
 			{
-				for (i = 0; i < ks.size(); i++)    //По порядку записываем данные в массив КС
-				{
-				/*	auto temp;
-					inf >> temp;
-					ks[i].SetID(temp);
-					inf >> temp;
-					ks[i].SetName(temp);
-					inf >> temp;
-					ks[i].SetNumber_ceh(temp);
-					inf >> temp;
-					ks[i].SetNumber_ceh_inWork(temp);
-					inf >> temp;
-					ks[i].SetEfficiency(temp);*/
-				}
+				inf >> ks[i];
 			}
 		}
 	}

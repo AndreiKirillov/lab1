@@ -1,5 +1,6 @@
 #include "Pipe.h"
 #include <iostream>
+#include <fstream>
 
 Pipe::Pipe()
 {
@@ -59,6 +60,24 @@ std::ostream& operator <<(std::ostream& out, const Pipe& p)    //Перегрузка опер
 	out << "ID трубы: " << p.id;
 	out << "\tДлинна трубы: " << p.length;
 	out << "\tДиаметр трубы: " << p.diametr;
-	out << "\tСтатус ремонта: " << p.remont;
+	out << "\tСтатус ремонта: " << p.remont << "\n\n";
 	return out;
+}
+
+std::ifstream& operator>>(std::ifstream& inf, Pipe& p)
+{
+	inf >> p.id;
+	inf >> p.length;
+	inf >> p.diametr;
+	inf >> p.remont;
+	return inf;
+}
+
+std::ofstream& operator<<(std::ofstream& outf, const Pipe& p)
+{
+	outf << p.id;
+	outf << p.length;
+	outf << p.diametr;
+	outf << p.remont;
+	return outf;
 }

@@ -82,3 +82,32 @@ string KS::GetName() const
 {
 	return name;
 }
+
+ostream& operator <<(ostream& out, const KS& ks)       //Перегрузка оператора вывода для структур кс
+{
+	out << "ID КС: " << ks.id;
+	out << "\tИмя КС: " << ks.name;
+	out << "\tРаботающие цеха: " << ks.number_ceh_inWork << "/" << ks.number_ceh;
+	out << "\tЭффективность КС: " << ks.efficiency << "%" << endl << " " << endl;
+	return out;
+}
+
+ifstream& operator>>(ifstream& inf, KS& ks)
+{
+	inf >> ks.id;
+	inf >> ks.name;
+	inf >> ks.number_ceh;
+	inf >> ks.number_ceh_inWork;
+	inf >> ks.efficiency;
+	return inf;
+}
+
+ofstream& operator<<(ofstream& outf, const KS& ks)
+{
+	outf << ks.id;
+	outf << ks.name;
+	outf << ks.number_ceh;
+	outf << ks.number_ceh_inWork;
+	outf << ks.efficiency;
+	return outf;
+}

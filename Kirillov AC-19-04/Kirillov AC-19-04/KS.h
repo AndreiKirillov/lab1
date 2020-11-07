@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <iostream>
+#include <fstream>
 using namespace std;
 
 class KS
@@ -23,5 +25,8 @@ public:
 	double GetEfficiency() const;
 	void SetEfficiency();
 	void CheckNumber_of_ceh();
+	friend ostream& operator <<(ostream& out, const KS& ks);       //Перегрузка оператора вывода для структур кс
+	friend ifstream& operator >>(ifstream& inf, KS& ks);
+	friend ofstream& operator <<(ofstream& outf, const KS& ks);
 };
 

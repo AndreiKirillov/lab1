@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 
 class Pipe
 {
@@ -20,6 +21,7 @@ public:
 	void SetRemont(bool new_status);
 	void ChangeStatus();
 	friend std::ostream& operator <<(std::ostream& out, const Pipe& p);
-	
+	friend std::ifstream& operator >>(std::ifstream& inf, Pipe& p);
+	friend std::ofstream& operator <<(std::ofstream& outf, const Pipe& p);
 };
 
