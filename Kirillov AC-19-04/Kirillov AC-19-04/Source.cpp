@@ -129,6 +129,50 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 	}
 }
 
+vector<int> FindPipe(const vector<Pipe>& p)
+{
+	cout << "Поиск труб по признаку 'в ремонте'\n" << endl;
+	vector<int> res;
+	int i;
+	for (i = 0; i < p.size(); i++)
+	{
+		if (p[i].GetRemont())
+			res.push_back(i);
+	}
+	return res;
+}
+
+vector<int> FindKS(const vector<KS>& ks)
+{
+	vector<int> res;
+	cout << "1-Искать кс по названию" << endl << "2-Искать кс по проценту задействованных цехов" << endl;
+	int what_to_find = GetNumber(1, 2);
+	int i;
+	if (what_to_find == 1)
+	{
+		cout << "Введите имя кс: ";
+		string find_name;
+		cin >> find_name;
+		for (i = 0; i < ks.size(); i++)
+		{
+			if (ks[i].GetName()==find_name)
+				res.push_back(i);
+		}		
+	}
+	if (what_to_find == 2)
+	{
+		double procent;
+		cout << "Введите желаемый процент задействованных цехов: ";
+		procent = GetNumber(0.0, 100.0);
+		for (i = 0; i < ks.size(); i++)
+		{
+			if (ks[i].GetEfficiency() > procent)
+				res.push_back(i);
+		}
+	}
+	return res;
+}
+
 void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
 {
 	ofstream outf;
@@ -175,17 +219,13 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции з
 			p.resize(SizePipes);
 			ks.resize(SizeKS);
 			for (i = 0; i < p.size(); i++)   //По порядку записываем данные в массив труб
-			{
 				inf >> p[i];
-			}
 			for (i = 0; i < ks.size(); i++)    //По порядку записываем данные в массив КС
-			{
 				inf >> ks[i];
-			}
+			cout << "Загрузка прошла успешно" << endl;
 		}
 	}
 	inf.close();
-	cout << "Загрузка прошла успешно" << endl;
 }
 
 void Menu()          //Функция вывода меню, выводит список возможных действий пользователя
@@ -196,16 +236,18 @@ void Menu()          //Функция вывода меню, выводит список возможных действий по
 		"3-Просмотр всех объектов" << endl <<
 		"4-Редактировать трубу" << endl <<
 		"5-Редактировать компрессорную станцию" << endl <<
-		"6-Сохранить в файл" << endl <<
-		"7-Загрузить из файла" << endl <<
-		"8-Открыть меню" << endl <<
+		"6-Поиск труб по признаку 'в ремонте'" << endl <<
+		"7-Поиск компрессорных станций" << endl <<
+		"8-Сохранить в файл" << endl <<
+		"9-Загрузить из файла" << endl <<
+		"10-Открыть меню" << endl <<
 		"0-Выход из программы" << endl;
 }
 
 int MakeStep()      // Функция, возвращающая число-действие, которое хочет совершить пользователь
 {
 	cout << "Какое действие вы хотите сделать?" << endl;
-	int a = GetNumber(0, 8);
+	int a = GetNumber(0, 10);
 	return a;
 }
 
@@ -220,7 +262,7 @@ int main()
 		int operation = MakeStep();          //Запрашиваем действие пользователя
 		switch (operation)                   //цикл для обработки операций, выбранных пользователем
 		{
-		case 1:                  
+		case 1:
 			NewPipe(pipes);  //Создаем новую трубу
 			break;
 		case 2:
@@ -236,12 +278,38 @@ int main()
 			RedactKS(ks);
 			break;
 		case 6:
-			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
+		    {
+				vector<int> pipe_indexes = FindPipe(pipes);
+				if (pipe_indexes.size() > 0)
+				{
+					int i;
+					for (i = 0; i < pipe_indexes.size(); i++)
+						cout << pipes[pipe_indexes[i]];
+				}
+				else 
+					cout << "Труб в ремонте не найдено!" << endl;
+		    }
 			break;
 		case 7:
+		{
+			vector<int> ks_indexes = FindKS(ks);
+			if (ks_indexes.size() > 0)
+			{
+				int i;
+				for (i = 0; i < ks_indexes.size(); i++)
+					cout << ks[ks_indexes[i]];
+			}
+			else
+				cout << "Компрессорных станций с данными параметрами не найдено!" << endl;
+		}
+		break;
+		case 8:
+			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
+			break;
+		case 9:
 			DownloadSaves(pipes, ks);    //загрузка данных из файла
 			break;
-		case 8:                          //Показ меню
+		case 10:                          //Показ меню
 			Menu();
 			break;
 		case 0:
