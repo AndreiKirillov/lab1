@@ -24,7 +24,7 @@ public:
 	void SetNumber_ceh_inWork(double new_value);
 	double GetEfficiency() const;
 	void SetEfficiency();
-	void CheckNumber_of_ceh();
+	void CheckNumber_of_ceh();                       //Для проверки корректности кол-ва цехов
 	friend ostream& operator <<(ostream& out, const KS& ks);       //Перегрузка оператора вывода для структур кс
 	friend ifstream& operator >>(ifstream& inf, KS& ks);
 	friend ofstream& operator <<(ofstream& outf, const KS& ks);

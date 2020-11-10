@@ -72,7 +72,7 @@ void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывод
 		}
 	}
 }
-vector<int> FindPipe(const vector<Pipe>& p);
+vector<int> FindPipe(const vector<Pipe>& p);   //Объявление чтобы использовать функцию
 
 void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 {
@@ -82,8 +82,7 @@ void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 	}
 	else
 	{
-		cout << "Какие трубы вы хотите редактировать?" << endl;
-		vector<int> pipe_indexes = FindPipe(p);
+	    vector<int> pipe_indexes = FindPipe(p);             //Меняем статус найденных труб
 		for (int i = 0; i < pipe_indexes.size(); i++)
 		{
 			p[pipe_indexes[i]].ChangeStatus();
@@ -133,7 +132,7 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 	}
 }
 
-vector<int> FindPipe(const vector<Pipe>& p)
+vector<int> FindPipe(const vector<Pipe>& p)        //Функция нахождения труб
 {
 	cout << "1 - трубы в ремонте" << endl <<
 		"2 - трубы без ремонта" << endl <<
@@ -145,7 +144,7 @@ vector<int> FindPipe(const vector<Pipe>& p)
 	{
 		for (i = 0; i < p.size(); i++)
 		{
-			if (p[i].GetRemont())
+			if (p[i].GetRemont())      //Трубы в ремонте
 				res.push_back(i);
 		}
 	}
@@ -153,7 +152,7 @@ vector<int> FindPipe(const vector<Pipe>& p)
 	{
 		for (i = 0; i < p.size(); i++)
 		{
-			if (!p[i].GetRemont())
+			if (!p[i].GetRemont())        //Трубы без ремонта
 				res.push_back(i);
 		}
 	}
@@ -165,7 +164,7 @@ vector<int> FindPipe(const vector<Pipe>& p)
 				"Чтобы закончить, введите ноль" << endl;
 			int id;
 			do
-			{
+			{                                                 //Ищем трубы по желанию пользователя
 				id = GetNumber(0, p.size());
 				if (id != 0)
 					res.push_back(id-1);
@@ -177,27 +176,27 @@ vector<int> FindPipe(const vector<Pipe>& p)
 	return res;
 }
 
-template<typename T>
-using Filter = bool(*)(const KS&, T parametr);
+template<typename T>                                  //Шаблон
+using Filter = bool(*)(const KS&, T parametr);        //Указатель на функцию 
 
-bool CheckByName(const KS& ks, string parametr)
+bool CheckByName(const KS& ks, string parametr)        //Функция для поиска по имени
 {
 	return ks.GetName() == parametr;
 }
 
-bool CheckByProcent(const KS& ks, double parametr)
+bool CheckByProcent(const KS& ks, double parametr)       //Функция для поиска по задействованным цехам
 {
 	return ks.GetEfficiency() >= parametr;
 }
 
 template<typename T>
-vector<int> FindKS(const vector<KS>& ks, Filter<T> f, T parametr)
+vector<int> FindKS(const vector<KS>& ks, Filter<T> f, T parametr)         //Функция нахождения кс
 {
-	vector<int> res;
+	vector<int> res;                         //Вектор для хранения индексов
 	int i;
 	for (i = 0; i < ks.size(); i++)
 	{
-		if (f(ks[i], parametr))
+		if (f(ks[i], parametr))            //Проверяем совпадение с помощью указателя
 			res.push_back(i);
 	}		
 	return res;
@@ -320,18 +319,18 @@ int main()
 		case 6:
 		    {
 			cout << "Поиск труб " << endl;
-				vector<int> pipe_indexes = FindPipe(pipes);
-				if (pipe_indexes.size() > 0)
+				vector<int> pipe_indexes = FindPipe(pipes);       //Вектор, хранящий индексы найденных труб
+				if (pipe_indexes.size() > 0)                      
 				{
 					int i;
 					for (i = 0; i < pipe_indexes.size(); i++)
-						cout << pipes[pipe_indexes[i]];
+						cout << pipes[pipe_indexes[i]];            //Выводим найденные трубы
 				}
 		    }
 			break;
 		case 7:
 		{
-			vector<int> ks_indexes;
+			vector<int> ks_indexes;                                              //Вектор, хранящий индексы найденных кс
 			cout << "1-Искать кс по названию" << endl << "2-Искать кс по проценту задействованных цехов" << endl;
 			int what_to_find = GetNumber(1, 2);
 			if (what_to_find == 1)
@@ -339,7 +338,7 @@ int main()
 				cout << "Введите имя кс: ";
 				string find_name;
 				cin >> find_name;
-				ks_indexes=FindKS<string>(ks, CheckByName, find_name);
+				ks_indexes=FindKS<string>(ks, CheckByName, find_name);    
 			}
 			if (what_to_find == 2)
 			{
