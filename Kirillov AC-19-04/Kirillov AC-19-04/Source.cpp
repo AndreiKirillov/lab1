@@ -72,6 +72,7 @@ void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывод
 		}
 	}
 }
+vector<int> FindPipe(const vector<Pipe>& p);
 
 void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 {
@@ -81,9 +82,12 @@ void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 	}
 	else
 	{
-		cout << "Введите ID трубы, статус которой хотите редактировать (диапазон " << 1 << "-" << p.size() << ")" << endl;
-		int id = GetNumber(1, p.size());
-		p[id-1].ChangeStatus();
+		cout << "Какие трубы вы хотите редактировать?" << endl;
+		vector<int> pipe_indexes = FindPipe(p);
+		for (int i = 0; i < pipe_indexes.size(); i++)
+		{
+			p[pipe_indexes[i]].ChangeStatus();
+		}
 	}
 }
 
@@ -131,14 +135,45 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 
 vector<int> FindPipe(const vector<Pipe>& p)
 {
-	cout << "Поиск труб по признаку 'в ремонте'\n" << endl;
+	cout << "1 - трубы в ремонте" << endl <<
+		"2 - трубы без ремонта" << endl <<
+		"3 - выбрать конкретные трубы" << endl;
+	int what_to_find = GetNumber(1, 3);
 	vector<int> res;
 	int i;
-	for (i = 0; i < p.size(); i++)
+	if (what_to_find==1)
 	{
-		if (p[i].GetRemont())
-			res.push_back(i);
+		for (i = 0; i < p.size(); i++)
+		{
+			if (p[i].GetRemont())
+				res.push_back(i);
+		}
 	}
+	if(what_to_find==2)
+	{
+		for (i = 0; i < p.size(); i++)
+		{
+			if (!p[i].GetRemont())
+				res.push_back(i);
+		}
+	}
+	if (what_to_find == 3)
+	{
+		if (p.size() != 0)
+		{
+			cout << "Вводите ID труб, которые хотите найти (диапазон " << 1 << "-" << p.size() << ")" << endl <<
+				"Чтобы закончить, введите ноль" << endl;
+			int id;
+			do
+			{
+				id = GetNumber(0, p.size());
+				if (id != 0)
+					res.push_back(id-1);
+			} while (id != 0);
+		}
+	}
+	if(res.size()==0)
+		cout << "Труб по данным параметрам не найдено!" << endl;
 	return res;
 }
 
@@ -229,7 +264,7 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции з
 		}
 	}
 	else
-		cout << "Не удалось произвести загрузку, !";
+		cout << "Не удалось произвести загрузку, введите корректное имя файла!" << endl;
 	inf.close();
 }
 
@@ -284,6 +319,7 @@ int main()
 			break;
 		case 6:
 		    {
+			cout << "Поиск труб " << endl;
 				vector<int> pipe_indexes = FindPipe(pipes);
 				if (pipe_indexes.size() > 0)
 				{
@@ -291,8 +327,6 @@ int main()
 					for (i = 0; i < pipe_indexes.size(); i++)
 						cout << pipes[pipe_indexes[i]];
 				}
-				else 
-					cout << "Труб в ремонте не найдено!" << endl;
 		    }
 			break;
 		case 7:
