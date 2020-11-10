@@ -170,9 +170,13 @@ vector<int> FindKS(const vector<KS>& ks, Filter<T> f, T parametr)
 
 void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
 {
+	cout << "Введите название файла для сохранения" << endl;
+	string filename;
+	cin >> filename;
+	filename += ".txt";
 	ofstream outf;
 	int i;
-	outf.open("Saves.txt");
+	outf.open(filename);
 	if (p.size() == 0 && ks.size() == 0)   //Когда массивы данных труб и КС пусты, сохранения не произойдёт 
 	{
 		cout << "Нет данных для сохранения!" << endl;
@@ -196,11 +200,15 @@ void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функц
 
 void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции загрузки   
 {
+	cout << "Введите название файла для загрузки" << endl;
+	string filename;
+	cin >> filename;
+	filename += ".txt";
 	ifstream inf;
 	int i=0;
 	int SizePipes;
 	int SizeKS;
-	inf.open("Saves.txt");
+	inf.open(filename);
 	if (inf.is_open())
 	{
 		inf >> SizePipes;                       //Считываем количество труб в переменную
@@ -220,6 +228,8 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции з
 			cout << "Загрузка прошла успешно" << endl;
 		}
 	}
+	else
+		cout << "Не удалось произвести загрузку, !";
 	inf.close();
 }
 
@@ -248,7 +258,7 @@ int MakeStep()      // Функция, возвращающая число-действие, которое хочет совер
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");              //Подключение русского языка
+	setlocale(LC_ALL, "Russian");          //Подключение русского языка
 	vector <Pipe> pipes;                       //вектор для хранения труб
 	vector <KS> ks;                            //вектор для хранения КС
 	Menu();                                  //показываем меню            

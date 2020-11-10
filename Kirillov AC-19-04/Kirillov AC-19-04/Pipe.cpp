@@ -1,6 +1,7 @@
 #include "Pipe.h"
 #include <iostream>
 #include <fstream>
+using namespace std;
 
 Pipe::Pipe()
 {
@@ -55,7 +56,7 @@ void Pipe::ChangeStatus()   //Меняем статус ремонта
 	remont=!remont;
 }
 
-std::ostream& operator <<(std::ostream& out, const Pipe& p)    //Перегрузка оператора вывода для структур труб
+ostream& operator <<(ostream& out, const Pipe& p)    //Перегрузка оператора вывода для структур труб
 {
 	out << "ID трубы: " << p.id;
 	out << "\tДлинна трубы: " << p.length;
@@ -64,7 +65,7 @@ std::ostream& operator <<(std::ostream& out, const Pipe& p)    //Перегрузка опер
 	return out;
 }
 
-std::ifstream& operator>>(std::ifstream& inf, Pipe& p)
+ifstream& operator>>(ifstream& inf, Pipe& p)
 {
 	inf >> p.id;
 	inf >> p.length;
@@ -73,11 +74,11 @@ std::ifstream& operator>>(std::ifstream& inf, Pipe& p)
 	return inf;
 }
 
-std::ofstream& operator<<(std::ofstream& outf, const Pipe& p)
+ofstream& operator<<(ofstream& outf, const Pipe& p)
 {
-	outf << p.id;
-	outf << p.length;
-	outf << p.diametr;
-	outf << p.remont;
+	outf << p.id << endl;
+	outf << p.length << endl;
+	outf << p.diametr << endl;
+	outf << p.remont << endl;
 	return outf;
 }

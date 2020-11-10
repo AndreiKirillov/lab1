@@ -88,7 +88,7 @@ ostream& operator <<(ostream& out, const KS& ks)       //Перегрузка оператора вы
 	out << "ID КС: " << ks.id;
 	out << "\tИмя КС: " << ks.name;
 	out << "\tРаботающие цеха: " << ks.number_ceh_inWork << "/" << ks.number_ceh;
-	out << "\tЭффективность КС: " << ks.efficiency << "%" << endl << " " << endl;
+	out << "\tЭффективность КС: " << ks.efficiency << "%" << endl << endl;
 	return out;
 }
 
@@ -104,10 +104,10 @@ ifstream& operator>>(ifstream& inf, KS& ks)
 
 ofstream& operator<<(ofstream& outf, const KS& ks)
 {
-	outf << ks.id;
-	outf << ks.name;
-	outf << ks.number_ceh;
-	outf << ks.number_ceh_inWork;
-	outf << ks.efficiency;
+	outf << ks.id << endl;
+	outf << ks.name << endl;
+	outf << ks.number_ceh << endl;
+	outf << ks.number_ceh_inWork << endl;
+	outf << ks.efficiency << endl;
 	return outf;
 }
