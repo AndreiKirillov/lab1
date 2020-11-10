@@ -142,34 +142,29 @@ vector<int> FindPipe(const vector<Pipe>& p)
 	return res;
 }
 
-vector<int> FindKS(const vector<KS>& ks)
+template<typename T>
+using Filter = bool(*)(const KS&, T parametr);
+
+bool CheckByName(const KS& ks, string parametr)
+{
+	return ks.GetName() == parametr;
+}
+
+bool CheckByProcent(const KS& ks, double parametr)
+{
+	return ks.GetEfficiency() >= parametr;
+}
+
+template<typename T>
+vector<int> FindKS(const vector<KS>& ks, Filter<T> f, T parametr)
 {
 	vector<int> res;
-	cout << "1-Искать кс по названию" << endl << "2-Искать кс по проценту задействованных цехов" << endl;
-	int what_to_find = GetNumber(1, 2);
 	int i;
-	if (what_to_find == 1)
+	for (i = 0; i < ks.size(); i++)
 	{
-		cout << "Введите имя кс: ";
-		string find_name;
-		cin >> find_name;
-		for (i = 0; i < ks.size(); i++)
-		{
-			if (ks[i].GetName()==find_name)
-				res.push_back(i);
-		}		
-	}
-	if (what_to_find == 2)
-	{
-		double procent;
-		cout << "Введите желаемый процент задействованных цехов: ";
-		procent = GetNumber(0.0, 100.0);
-		for (i = 0; i < ks.size(); i++)
-		{
-			if (ks[i].GetEfficiency() > procent)
-				res.push_back(i);
-		}
-	}
+		if (f(ks[i], parametr))
+			res.push_back(i);
+	}		
 	return res;
 }
 
@@ -292,9 +287,26 @@ int main()
 			break;
 		case 7:
 		{
-			vector<int> ks_indexes = FindKS(ks);
+			vector<int> ks_indexes;
+			cout << "1-Искать кс по названию" << endl << "2-Искать кс по проценту задействованных цехов" << endl;
+			int what_to_find = GetNumber(1, 2);
+			if (what_to_find == 1)
+			{
+				cout << "Введите имя кс: ";
+				string find_name;
+				cin >> find_name;
+				ks_indexes=FindKS<string>(ks, CheckByName, find_name);
+			}
+			if (what_to_find == 2)
+			{
+				double procent;
+				cout << "Введите желаемый процент задействованных цехов: ";
+				procent = GetNumber(0.0, 100.0);
+				ks_indexes=FindKS(ks, CheckByProcent, procent);
+			}
 			if (ks_indexes.size() > 0)
 			{
+				cout << "Найденные компрессорные станции:" << endl;
 				int i;
 				for (i = 0; i < ks_indexes.size(); i++)
 					cout << ks[ks_indexes[i]];
