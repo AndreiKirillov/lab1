@@ -13,15 +13,15 @@ KS::KS()
 	efficiency = 0;
 }
 
-int KS::GetID() const
-{
-	return id;
-}
-
-void KS::SetID(int new_id)
-{
-	id = new_id;
-}
+//int KS::GetID() const
+//{
+//	return id;
+//}
+//
+//void KS::SetID(int new_id)
+//{
+//	id = new_id;
+//}
 
 
 void KS::SetName()
@@ -33,55 +33,50 @@ void KS::SetName()
 	name = NewName;
 }
 
-double KS::GetNumber_ceh() const
-{
-	return number_ceh;
-}
+//double KS::GetNumber_ceh() const
+//{
+//	return number_ceh;
+//}
 
 void KS::SetNumber_ceh(double new_value)
 {
+	while (new_value < number_ceh_inWork)
+	{
+		cout << " ол-во цехов должно быть больше или равно чем кол-во работающих цехов (больше " << number_ceh_inWork << ")" << endl;
+		new_value = GetNumber(number_ceh_inWork, 10000.0);
+	}
 	number_ceh = new_value;
 }
 
-double KS::GetNumber_ceh_inWork() const
-{
-	return number_ceh_inWork;
-}
+//double KS::GetNumber_ceh_inWork() const
+//{
+//	return number_ceh_inWork;
+//}
 
 void KS::SetNumber_ceh_inWork(double new_value)
 {
+	while (new_value > number_ceh)
+	{
+		cout << " ол-во работающих цехов должно быть меньше или равно общего кол-ва цехов (меньше " << number_ceh << ")" << endl;
+		new_value = GetNumber(0.0, number_ceh);
+	}
 	number_ceh_inWork = new_value;
 }
 
-double KS::GetEfficiency() const
-{
-	return efficiency;
-}
+//double KS::GetEfficiency() const
+//{
+//	return efficiency;
+//}
+//
+//void KS::SetEfficiency()
+//{
+//	efficiency= (number_ceh_inWork / number_ceh) * 100;
+//}
 
-void KS::SetEfficiency()
-{
-	efficiency= (number_ceh_inWork / number_ceh) * 100;
-}
-
-void KS::CheckNumber_of_ceh()
-{
-	do                                      //ѕровер€ем в цикле, чтобы работающих цехов было не больше общего кол-ва цехов
-	{
-		if (number_ceh < number_ceh_inWork)
-		{
-			cout << "¬ведите корректные данные!\n" << endl;
-			cout << "¬ведите общее кол-во цехов:" << endl;
-			SetNumber_ceh(GetNumber(1.0, 100000.0));
-			cout << "¬ведите кол-во цехов в работе:" << endl;
-			SetNumber_ceh_inWork(GetNumber(1.0, 100000.0));
-		}
-	} while (number_ceh < number_ceh_inWork);
-}
-
-string KS::GetName() const
-{
-	return name;
-}
+//string KS::GetName() const
+//{
+//	return name;
+//}
 
 ostream& operator <<(ostream& out, const KS& ks)       //ѕерегрузка оператора вывода дл€ структур кс
 {

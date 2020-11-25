@@ -23,11 +23,11 @@ void NewPipe(vector<Pipe>& p)          //Функция создания новой трубы
 {
 	Pipe p1;
 	cout << "Введите длину трубы:";
-	p1.SetLength(GetNumber(1, 10000000));
+	p1.length=GetNumber(1, 10000000);
 	cout << "Введите диаметр трубы:";
-	p1.SetDiametr(GetNumber(1, 10000000));
+	p1.diametr=GetNumber(1, 10000000);
 	p.push_back(p1);               //Добавляем в конец вектора труб
-	p[p.size() - 1].SetID(p.size());
+	p[p.size() - 1].id=p.size();
 }
 
 void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорной станции
@@ -37,11 +37,10 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 	cout << "Введите общее кол-во цехов:";
 	ks1.SetNumber_ceh(GetNumber(1.0, 100000.0));
 	cout << "Введите кол-во цехов в работе:";
-	ks1.SetNumber_ceh_inWork(GetNumber(1.0, 100000.0));
-	ks1.CheckNumber_of_ceh();
-	ks1.SetEfficiency();
+	ks1.SetNumber_ceh_inWork(GetNumber(0.0, 100000.0));
+	ks1.efficiency= (ks1.number_ceh_inWork / ks1.number_ceh) * 100;
 	ks.push_back(ks1);                       //добавляем переменную в конец вектора
-	ks[ks.size() - 1].SetID(ks.size());
+	ks[ks.size() - 1].id=ks.size();
 }    
 
 void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывода данных в консоль
@@ -115,15 +114,13 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 				break;
 			case 2:
 				cout << "Введите новое кол-во цехов КС:" << endl;
-				ks[id].SetNumber_ceh(GetNumber(1,100000));
-				ks[id].CheckNumber_of_ceh();
-				ks[id].SetEfficiency();
+				ks[id].SetNumber_ceh(GetNumber(ks[id].number_ceh_inWork, 100000));
+				ks[id].efficiency = (ks[id].number_ceh_inWork / ks[id].number_ceh) * 100;;
 				break;
 			case 3:
 				cout << "Введите новое кол-во работающих цехов КС:" << endl;
-				ks[id].SetNumber_ceh_inWork(GetNumber(1.0, ks[id].GetNumber_ceh()));
-				ks[id].CheckNumber_of_ceh();
-				ks[id].SetEfficiency();
+				ks[id].SetNumber_ceh_inWork(GetNumber(1.0, ks[id].number_ceh));
+				ks[id].efficiency = (ks[id].number_ceh_inWork / ks[id].number_ceh) * 100;;
 				break;
 			case 0:
 				break;
@@ -144,7 +141,7 @@ vector<int> FindPipe(const vector<Pipe>& p)        //Функция нахождения труб
 	{
 		for (i = 0; i < p.size(); i++)
 		{
-			if (p[i].GetRemont())      //Трубы в ремонте
+			if (p[i].remont)      //Трубы в ремонте
 				res.push_back(i);
 		}
 	}
@@ -152,7 +149,7 @@ vector<int> FindPipe(const vector<Pipe>& p)        //Функция нахождения труб
 	{
 		for (i = 0; i < p.size(); i++)
 		{
-			if (!p[i].GetRemont())        //Трубы без ремонта
+			if (!p[i].remont)        //Трубы без ремонта
 				res.push_back(i);
 		}
 	}
@@ -181,12 +178,12 @@ using Filter = bool(*)(const KS&, T parametr);        //Указатель на функцию
 
 bool CheckByName(const KS& ks, string parametr)        //Функция для поиска по имени
 {
-	return ks.GetName() == parametr;
+	return ks.name == parametr;
 }
 
 bool CheckByProcent(const KS& ks, double parametr)       //Функция для поиска по задействованным цехам
 {
-	return ks.GetEfficiency() >= parametr;
+	return ks.efficiency >= parametr;
 }
 
 template<typename T>
