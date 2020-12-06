@@ -119,7 +119,7 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 				break;
 			case 3:
 				cout << "Введите новое кол-во работающих цехов КС:" << endl;
-				ks[id].SetNumber_ceh_inWork(GetNumber(1.0, ks[id].number_ceh));
+				ks[id].SetNumber_ceh_inWork(GetNumber(1.0, 100000.0));
 				ks[id].efficiency = (ks[id].number_ceh_inWork / ks[id].number_ceh) * 100;;
 				break;
 			case 0:
@@ -176,6 +176,11 @@ vector<int> FindPipe(const vector<Pipe>& p)        //Функция нахождения труб
 template<typename T>                                  //Шаблон
 using Filter = bool(*)(const KS&, T parametr);        //Указатель на функцию 
 
+bool CheckByID(const KS& ks, int parametr)
+{
+	return ks.id == parametr;
+}
+
 bool CheckByName(const KS& ks, string parametr)        //Функция для поиска по имени
 {
 	return ks.name == parametr;
@@ -197,6 +202,81 @@ vector<int> FindKS(const vector<KS>& ks, Filter<T> f, T parametr)         //Функ
 			res.push_back(i);
 	}		
 	return res;
+}
+
+vector<int> UserChooseKS(const vector<KS>& ks)
+{
+	vector<int> ks_indexes;                                              //Вектор, хранящий индексы найденных кс
+	cout << "1-Искать кс по ID" << endl << "2-Искать кс по названию" << endl << "3-Искать кс по проценту задействованных цехов" << endl;
+	int what_to_find = GetNumber(1, 3);
+	if (what_to_find == 1)
+	{
+		if (ks.size() != 0)
+		{
+			cout << "Вводите ID труб, которые хотите найти (диапазон " << 1 << "-" << ks.size() << ")" << endl <<
+				"Чтобы закончить, введите ноль" << endl;
+			int id;
+			do
+			{                                                 //Ищем трубы по желанию пользователя
+				id = GetNumber(0, ks.size());
+				if (id != 0)
+					ks_indexes.push_back(id - 1);
+			} while (id != 0);
+		}
+	}
+	if (what_to_find == 2)
+	{
+		cout << "Введите имя кс: ";
+		string find_name;
+		cin >> find_name;
+		ks_indexes = FindKS<string>(ks, CheckByName, find_name);
+	}
+	if (what_to_find == 3)
+	{
+		double procent;
+		cout << "Введите желаемый процент задействованных цехов: ";
+		procent = GetNumber(0.0, 100.0);
+		ks_indexes = FindKS(ks, CheckByProcent, procent);
+	}
+	return ks_indexes;
+}
+
+void DeletePipes(vector<Pipe>& p)
+{
+	vector<int> pipe_indexes = FindPipe(p);
+	for (int i = 0; i < p.size(); i++)
+	{
+		for (int j = 0; j < pipe_indexes.size(); j++)
+		{
+			if (p[i].id == pipe_indexes[j]+1)
+			{
+				p.erase(p.begin() + i);
+			}
+		}
+	}
+	for (int i = 0; i < p.size(); i++)
+	{
+		p[i].id = i + 1;
+	}
+}
+
+void DeleteKS(vector<KS>& ks)
+{
+	vector<int> ks_indexes = UserChooseKS(ks);
+	for (int i = 0; i < ks.size(); i++)
+	{
+		for (int j = 0; j < ks_indexes.size(); j++)
+		{
+			if (ks[i].id == ks_indexes[j] + 1)
+			{
+				ks.erase(ks.begin() + i);
+			}
+		}
+	}
+	for (int i = 0; i < ks.size(); i++)
+	{
+		ks[i].id = i + 1;
+	}
 }
 
 void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
@@ -274,9 +354,10 @@ void Menu()          //Функция вывода меню, выводит список возможных действий по
 		"5-Редактировать компрессорную станцию" << endl <<
 		"6-Поиск труб по признаку 'в ремонте'" << endl <<
 		"7-Поиск компрессорных станций" << endl <<
-		"8-Сохранить в файл" << endl <<
-		"9-Загрузить из файла" << endl <<
-		"10-Открыть меню" << endl <<
+		"8-Удалить объекты"<<endl<<
+		"9-Сохранить в файл" << endl <<
+		"10-Загрузить из файла" << endl <<
+		"11-Открыть меню" << endl <<
 		"0-Выход из программы" << endl;
 }
 
@@ -327,27 +408,11 @@ int main()
 			break;
 		case 7:
 		{
-			vector<int> ks_indexes;                                              //Вектор, хранящий индексы найденных кс
-			cout << "1-Искать кс по названию" << endl << "2-Искать кс по проценту задействованных цехов" << endl;
-			int what_to_find = GetNumber(1, 2);
-			if (what_to_find == 1)
-			{
-				cout << "Введите имя кс: ";
-				string find_name;
-				cin >> find_name;
-				ks_indexes=FindKS<string>(ks, CheckByName, find_name);    
-			}
-			if (what_to_find == 2)
-			{
-				double procent;
-				cout << "Введите желаемый процент задействованных цехов: ";
-				procent = GetNumber(0.0, 100.0);
-				ks_indexes=FindKS(ks, CheckByProcent, procent);
-			}
+			vector<int> ks_indexes = UserChooseKS(ks);                                            //Вектор, хранящий индексы найденных кс
 			if (ks_indexes.size() > 0)
 			{
 				cout << "Найденные компрессорные станции:" << endl;
-				int i;
+				int i; 
 				for (i = 0; i < ks_indexes.size(); i++)
 					cout << ks[ks_indexes[i]];
 			}
@@ -356,12 +421,26 @@ int main()
 		}
 		break;
 		case 8:
+		{
+			cout << "Что вы хотите удалить?" << endl << "1-Трубы" << endl << "2-КС" << endl;
+			int WhatToDelete = GetNumber(1, 2);
+			if (WhatToDelete == 1)
+			{
+				DeletePipes(pipes);
+			}
+			else
+			{
+				DeleteKS(ks);
+			}
+		}
+		break;
+		case 9:
 			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
 			break;
-		case 9:
+		case 10:
 			DownloadSaves(pipes, ks);    //загрузка данных из файла
 			break;
-		case 10:                          //Показ меню
+		case 11:                          //Показ меню
 			Menu();
 			break;
 		case 0:

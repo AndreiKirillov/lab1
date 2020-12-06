@@ -40,7 +40,7 @@ void KS::SetName()
 
 void KS::SetNumber_ceh(double new_value)
 {
-	while (new_value < number_ceh_inWork)
+	if (new_value < number_ceh_inWork)
 	{
 		cout << "Кол-во цехов должно быть больше или равно чем кол-во работающих цехов (больше " << number_ceh_inWork << ")" << endl;
 		new_value = GetNumber(number_ceh_inWork, 10000.0);
@@ -55,7 +55,7 @@ void KS::SetNumber_ceh(double new_value)
 
 void KS::SetNumber_ceh_inWork(double new_value)
 {
-	while (new_value > number_ceh)
+	if (new_value > number_ceh)
 	{
 		cout << "Кол-во работающих цехов должно быть меньше или равно общего кол-ва цехов (меньше " << number_ceh << ")" << endl;
 		new_value = GetNumber(0.0, number_ceh);
