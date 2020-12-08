@@ -71,7 +71,8 @@ void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывод
 		}
 	}
 }
-vector<int> FindPipe(const vector<Pipe>& p);   //Объявление чтобы использовать функцию
+
+vector<int> FindPipe(const vector<Pipe>& p, int MaxPossibleValue);   //Объявление чтобы использовать функцию
 
 void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 {
@@ -81,7 +82,7 @@ void RedactPipe(vector<Pipe>& p)            //Функция для редактирования трубы
 	}
 	else
 	{
-	    vector<int> pipe_indexes = FindPipe(p);             //Меняем статус найденных труб
+	    vector<int> pipe_indexes = FindPipe(p, p.size());             //Меняем статус найденных труб
 		for (int i = 0; i < pipe_indexes.size(); i++)
 		{
 			p[pipe_indexes[i]].ChangeStatus();
@@ -129,48 +130,69 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 	}
 }
 
-vector<int> FindPipe(const vector<Pipe>& p)        //Функция нахождения труб
+vector<int> FindPipe(const vector<Pipe>& p, int MaxPossibleValue)        //Функция нахождения труб
 {
-	cout << "1 - трубы в ремонте" << endl <<
-		"2 - трубы без ремонта" << endl <<
-		"3 - выбрать конкретные трубы" << endl;
-	int what_to_find = GetNumber(1, 3);
 	vector<int> res;
-	int i;
-	if (what_to_find==1)
+	if (MaxPossibleValue > 1)
 	{
-		for (i = 0; i < p.size(); i++)
+		cout << "1 - трубы в ремонте" << endl <<
+			"2 - трубы без ремонта" << endl <<
+			"3 - выбрать конкретные трубы" << endl;
+		int what_to_find = GetNumber(1, 3);
+		int i;
+		if (what_to_find == 1)
 		{
-			if (p[i].remont)      //Трубы в ремонте
-				res.push_back(i);
+			for (i = 0; i < p.size(); i++)
+			{
+				if (p[i].remont)      //Трубы в ремонте
+					res.push_back(i);
+			}
+		}
+		if (what_to_find == 2)
+		{
+			for (i = 0; i < p.size(); i++)
+			{
+				if (!p[i].remont)        //Трубы без ремонта
+					res.push_back(i);
+			}
+		}
+		if (what_to_find == 3)
+		{
+			if (p.size() != 0)
+			{
+				cout << "Вводите ID труб, которые хотите найти (диапазон " << 1 << "-" << p.size() << ")" << endl <<
+					"Чтобы закончить, введите ноль" << endl;
+				int id;
+				do
+				{                                                 //Ищем трубы по желанию пользователя
+					id = GetNumber(0, p.size());
+					if (id != 0)
+						res.push_back(id - 1);
+				} while (id != 0);
+			}
+		}
+		if (res.size() == 0)
+			cout << "Труб по данным параметрам не найдено!" << endl;
+		return res;
+	}
+	else
+	{
+		if (p.size() > 0)
+		{
+			cout << "Можно выбрать только одну трубу!" << endl;
+			cout << "Введите ID трубы, которую хотите выбрать (диапазон " << 1 << "-" << p.size() << ")" << endl;
+			int pipe_id = GetNumber(1, p.size());
+			res.push_back(pipe_id-1);
+			return res;
+		}
+		else
+		{
+			res.push_back(-1);
+			cout << "Труб не существует!" << endl;
+			return res;
 		}
 	}
-	if(what_to_find==2)
-	{
-		for (i = 0; i < p.size(); i++)
-		{
-			if (!p[i].remont)        //Трубы без ремонта
-				res.push_back(i);
-		}
-	}
-	if (what_to_find == 3)
-	{
-		if (p.size() != 0)
-		{
-			cout << "Вводите ID труб, которые хотите найти (диапазон " << 1 << "-" << p.size() << ")" << endl <<
-				"Чтобы закончить, введите ноль" << endl;
-			int id;
-			do
-			{                                                 //Ищем трубы по желанию пользователя
-				id = GetNumber(0, p.size());
-				if (id != 0)
-					res.push_back(id-1);
-			} while (id != 0);
-		}
-	}
-	if(res.size()==0)
-		cout << "Труб по данным параметрам не найдено!" << endl;
-	return res;
+	
 }
 
 template<typename T>                                  //Шаблон
@@ -204,46 +226,56 @@ vector<int> FindKS(const vector<KS>& ks, Filter<T> f, T parametr)         //Функ
 	return res;
 }
 
-vector<int> UserChooseKS(const vector<KS>& ks)
+vector<int> UserChooseKS(const vector<KS>& ks, int MaxPossibleValue)
 {
 	vector<int> ks_indexes;                                              //Вектор, хранящий индексы найденных кс
 	cout << "1-Искать кс по ID" << endl << "2-Искать кс по названию" << endl << "3-Искать кс по проценту задействованных цехов" << endl;
-	int what_to_find = GetNumber(1, 3);
+    int what_to_find = GetNumber(1, 3);
 	if (what_to_find == 1)
 	{
 		if (ks.size() != 0)
 		{
-			cout << "Вводите ID труб, которые хотите найти (диапазон " << 1 << "-" << ks.size() << ")" << endl <<
+			cout << "Вводите ID кс, которые хотите найти (диапазон " << 1 << "-" << ks.size() << ")" << endl <<
 				"Чтобы закончить, введите ноль" << endl;
 			int id;
 			do
-			{                                                 //Ищем трубы по желанию пользователя
+			{                                                 //Ищем кс по желанию пользователя
 				id = GetNumber(0, ks.size());
 				if (id != 0)
 					ks_indexes.push_back(id - 1);
-			} while (id != 0);
+			} while (id != 0 && ks_indexes.size()<MaxPossibleValue);
 		}
-	}
+	}else
 	if (what_to_find == 2)
 	{
 		cout << "Введите имя кс: ";
 		string find_name;
 		cin >> find_name;
 		ks_indexes = FindKS<string>(ks, CheckByName, find_name);
-	}
-	if (what_to_find == 3)
+	}else
+	if (what_to_find == 3 && MaxPossibleValue>1)
 	{
 		double procent;
 		cout << "Введите желаемый процент задействованных цехов: ";
 		procent = GetNumber(0.0, 100.0);
 		ks_indexes = FindKS(ks, CheckByProcent, procent);
+	}else
+	{
+		cout << "Нельзя искать по проценту задействанных цехов!" << endl;
 	}
-	return ks_indexes;
+	if (MaxPossibleValue > 1)
+		return ks_indexes;
+	else
+	{
+		if(ks_indexes.size()==0)
+		ks_indexes.push_back(-1);
+		return ks_indexes;
+	}
 }
 
 void DeletePipes(vector<Pipe>& p)
 {
-	vector<int> pipe_indexes = FindPipe(p);
+	vector<int> pipe_indexes = FindPipe(p,p.size());
 	for (int i = 0; i < p.size(); i++)
 	{
 		for (int j = 0; j < pipe_indexes.size(); j++)
@@ -262,7 +294,7 @@ void DeletePipes(vector<Pipe>& p)
 
 void DeleteKS(vector<KS>& ks)
 {
-	vector<int> ks_indexes = UserChooseKS(ks);
+	vector<int> ks_indexes = UserChooseKS(ks, ks.size());
 	for (int i = 0; i < ks.size(); i++)
 	{
 		for (int j = 0; j < ks_indexes.size(); j++)
@@ -276,6 +308,35 @@ void DeleteKS(vector<KS>& ks)
 	for (int i = 0; i < ks.size(); i++)
 	{
 		ks[i].id = i + 1;
+	}
+}
+
+void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)           //Функция соединения компрессорок трубой
+{
+	if (p.size() == 0 || ks.size() < 2 || (p.size() == 0 && ks.size() < 2))    //Проверяем достаточно ли объектов
+	{
+		cout << "Невозможно соединить КС, так как недостаточно объектов" << endl;
+	}
+	else
+	{
+		cout << "Выберите начальную компрессорную станцию:" << endl;            // Пользователь выбирает нужные объекты
+		vector<int> begin = UserChooseKS(ks, 1);
+		int a = begin[0];
+		cout << "Выберите конечную компрессорную станцию:" << endl;            //////Сделать потом чтоб не заставлять выбирать если ошибка
+		vector<int> end = UserChooseKS(ks, 1);
+		int b = end[0];                                                             // а, b, pipe - индекс
+		cout << "Выберите трубу для соединения компрессорных станций:" << endl;
+		vector<int> v = FindPipe(p, 1);
+		int pipe = v[0];
+		if (a >= 0 && b >= 0 && a != b && pipe>=0)       //Если всё нормально
+		{
+			p[pipe].input = a+1;       //Храним id
+			p[pipe].output = b + 1;
+		}
+		else
+		{
+			cout << "Ошибка! Попробуйте заново!" << endl;
+		}
 	}
 }
 
@@ -349,22 +410,23 @@ void Menu()          //Функция вывода меню, выводит список возможных действий по
 	cout << "Меню программы" << endl <<
 		"1-Добавить трубу" << endl <<
 		"2-Добавить компрессорную станцию" << endl <<
-		"3-Просмотр всех объектов" << endl <<
-		"4-Редактировать трубу" << endl <<
-		"5-Редактировать компрессорную станцию" << endl <<
-		"6-Поиск труб по признаку 'в ремонте'" << endl <<
-		"7-Поиск компрессорных станций" << endl <<
-		"8-Удалить объекты"<<endl<<
-		"9-Сохранить в файл" << endl <<
-		"10-Загрузить из файла" << endl <<
-		"11-Открыть меню" << endl <<
+		"3-Соединить компрессорные станции" << endl <<
+		"4-Просмотр всех объектов" << endl <<
+		"5-Редактировать трубу" << endl <<
+		"6-Редактировать компрессорную станцию" << endl <<
+		"7-Поиск труб по признаку 'в ремонте'" << endl <<
+		"8-Поиск компрессорных станций" << endl <<
+		"9-Удалить объекты" << endl <<
+		"10-Сохранить в файл" << endl <<
+		"11-Загрузить из файла" << endl <<
+		"12-Открыть меню" << endl <<
 		"0-Выход из программы" << endl;
 }
 
 int MakeStep()      // Функция, возвращающая число-действие, которое хочет совершить пользователь
 {
 	cout << "Какое действие вы хотите сделать?" << endl;
-	int a = GetNumber(0, 10);
+	int a = GetNumber(0, 12);
 	return a;
 }
 
@@ -385,19 +447,22 @@ int main()
 		case 2:
 			NewKS(ks);        //Создаем новую кс
 			break;
-		case 3:                                  //Вывод списка объектов в консоль
+		case 3:
+			ConnectKSbyPipe(pipes, ks);
+			break;
+		case 4:                                  //Вывод списка объектов в консоль
 			PrintData(pipes, ks);
 			break;
-		case 4:                                   //Редактируем статус "В ремонте" для трубы
+		case 5:                                   //Редактируем статус "В ремонте" для трубы
 			RedactPipe(pipes);
 			break;
-		case 5:                //Рекдактирование КС
+		case 6:                //Рекдактирование КС
 			RedactKS(ks);
 			break;
-		case 6:
+		case 7:
 		    {
 			cout << "Поиск труб " << endl;
-				vector<int> pipe_indexes = FindPipe(pipes);       //Вектор, хранящий индексы найденных труб
+				vector<int> pipe_indexes = FindPipe(pipes,pipes.size());       //Вектор, хранящий индексы найденных труб
 				if (pipe_indexes.size() > 0)                      
 				{
 					int i;
@@ -406,9 +471,9 @@ int main()
 				}
 		    }
 			break;
-		case 7:
+		case 8:
 		{
-			vector<int> ks_indexes = UserChooseKS(ks);                                            //Вектор, хранящий индексы найденных кс
+			vector<int> ks_indexes = UserChooseKS(ks,ks.size());                                            //Вектор, хранящий индексы найденных кс
 			if (ks_indexes.size() > 0)
 			{
 				cout << "Найденные компрессорные станции:" << endl;
@@ -420,7 +485,7 @@ int main()
 				cout << "Компрессорных станций с данными параметрами не найдено!" << endl;
 		}
 		break;
-		case 8:
+		case 9:
 		{
 			cout << "Что вы хотите удалить?" << endl << "1-Трубы" << endl << "2-КС" << endl;
 			int WhatToDelete = GetNumber(1, 2);
@@ -434,13 +499,13 @@ int main()
 			}
 		}
 		break;
-		case 9:
+		case 10:
 			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
 			break;
-		case 10:
+		case 11:
 			DownloadSaves(pipes, ks);    //загрузка данных из файла
 			break;
-		case 11:                          //Показ меню
+		case 12:                          //Показ меню
 			Menu();
 			break;
 		case 0:
