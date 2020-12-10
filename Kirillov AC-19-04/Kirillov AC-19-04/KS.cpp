@@ -13,17 +13,6 @@ KS::KS()
 	efficiency = 0;
 }
 
-//int KS::GetID() const
-//{
-//	return id;
-//}
-//
-//void KS::SetID(int new_id)
-//{
-//	id = new_id;
-//}
-
-
 void KS::SetName()
 {
 	string NewName;
@@ -32,11 +21,6 @@ void KS::SetName()
 	getline(cin, NewName );
 	name = NewName;
 }
-
-//double KS::GetNumber_ceh() const
-//{
-//	return number_ceh;
-//}
 
 void KS::SetNumber_ceh(double new_value)
 {
@@ -48,11 +32,6 @@ void KS::SetNumber_ceh(double new_value)
 	number_ceh = new_value;
 }
 
-//double KS::GetNumber_ceh_inWork() const
-//{
-//	return number_ceh_inWork;
-//}
-
 void KS::SetNumber_ceh_inWork(double new_value)
 {
 	if (new_value > number_ceh)
@@ -62,21 +41,6 @@ void KS::SetNumber_ceh_inWork(double new_value)
 	}
 	number_ceh_inWork = new_value;
 }
-
-//double KS::GetEfficiency() const
-//{
-//	return efficiency;
-//}
-//
-//void KS::SetEfficiency()
-//{
-//	efficiency= (number_ceh_inWork / number_ceh) * 100;
-//}
-
-//string KS::GetName() const
-//{
-//	return name;
-//}
 
 ostream& operator <<(ostream& out, const KS& ks)       //Перегрузка оператора вывода для структур кс
 {

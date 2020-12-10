@@ -327,7 +327,7 @@ void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)           //Функция 
 		int b = end[0];                                                             // а, b, pipe - индекс
 		cout << "Выберите трубу для соединения компрессорных станций:" << endl;
 		vector<int> v = FindPipe(p, 1);
-		int pipe = v[0];
+		int pipe = v[0];   //////Труба должна быть не в ремонте
 		if (a >= 0 && b >= 0 && a != b && pipe>=0)       //Если всё нормально
 		{
 			p[pipe].input = a+1;       //Храним id
