@@ -64,23 +64,32 @@ vector<vector<int>> Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& 
 void Graph::PrintGraph(const vector<vector<int>>& matrix)
 {
 	//Список смежности
-	cout << "Компрессорная станция - смежные с ней станции" << endl;
-	for (int i = 0; i < matrix.size(); i++)
+	bool Matrix_is_empty = false;
+	if (Pipes_in_Graph.size() == 0)
+		Matrix_is_empty = true;
+	if (!Matrix_is_empty)
 	{
-		bool endline = false;
-		for (int j = 0; j < matrix[i].size(); j++)
-			if (matrix[i][j] == 1)
-			{
-				if (endline == false)
+		cout << "/tГазотранспортная сеть/t/n/n" <<
+			"Компрессорная станция <---> смежные с ней станции" << endl << endl;
+		for (int i = 0; i < matrix.size(); i++)
+		{
+			bool endline = false;
+			for (int j = 0; j < matrix[i].size(); j++)
+				if (matrix[i][j] == 1)
 				{
-					cout << i << "/t-/t" << j;
-					endline = true;
+					if (endline == false)
+					{
+						cout << i << "/t-/t" << j;
+						endline = true;
+					}
+					else
+						cout << ", " << j;
 				}
-				else
-					cout << ", " << j;
-			}
-		if (endline == true)
-			cout << endl;
+			if (endline == true)
+				cout << endl;
+		}
+		cout << endl;
 	}
-	cout << endl;
+	else
+		cout << "Газотранспортной сети не существует, так как нет связей между компрессорными станциями" << endl;
 }
