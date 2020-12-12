@@ -5,6 +5,7 @@
 #include"KS.h"
 #include<vector>
 #include<set>
+#include<map>
 using namespace std;
 
 class Graph
@@ -16,7 +17,9 @@ public:
     vector<vector<int>> Matrix;      //Матрица инциденций
     ///////Методы класса
     void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks);
-    vector<vector<int>> CreateGraph(const vector<Pipe>& p, const vector<KS>& ks);
-    void PrintGraph(const vector<vector<int>>& matrix);
+    void CreateGraph(const vector<Pipe>& p, const vector<KS>& ks);
+    void PrintGraph();
+    //bool CheckCycle();
+    void TopologicalSort();
 };
 

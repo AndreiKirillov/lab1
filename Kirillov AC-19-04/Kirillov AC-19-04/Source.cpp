@@ -5,6 +5,7 @@
 #include "Pipe.h"
 #include "KS.h"
 #include "Source.h"
+#include "Graph.h"
 using namespace std;
 
 double GetNumber(double min, double max)          //Функция для проверки верного ввода с клавиутуры
@@ -311,35 +312,6 @@ void DeleteKS(vector<KS>& ks)
 	}
 }
 
-void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)           //Функция соединения компрессорок трубой
-{
-	if (p.size() == 0 || ks.size() < 2 || (p.size() == 0 && ks.size() < 2))    //Проверяем достаточно ли объектов
-	{
-		cout << "Невозможно соединить КС, так как недостаточно объектов" << endl;
-	}
-	else
-	{
-		cout << "Выберите начальную компрессорную станцию:" << endl;            // Пользователь выбирает нужные объекты
-		vector<int> begin = UserChooseKS(ks, 1);
-		int a = begin[0];
-		cout << "Выберите конечную компрессорную станцию:" << endl;            //////Сделать потом чтоб не заставлять выбирать если ошибка
-		vector<int> end = UserChooseKS(ks, 1);
-		int b = end[0];                                                             // а, b, pipe - индекс
-		cout << "Выберите трубу для соединения компрессорных станций:" << endl;
-		vector<int> v = FindPipe(p, 1);
-		int pipe = v[0];   //////Труба должна быть не в ремонте
-		if (a >= 0 && b >= 0 && a != b && pipe>=0)       //Если всё нормально
-		{
-			p[pipe].input = a+1;       //Храним id
-			p[pipe].output = b + 1;
-		}
-		else
-		{
-			cout << "Ошибка! Попробуйте заново!" << endl;
-		}
-	}
-}
-
 void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
 {
 	cout << "Введите название файла для сохранения" << endl;
@@ -417,16 +389,18 @@ void Menu()          //Функция вывода меню, выводит список возможных действий по
 		"7-Поиск труб по признаку 'в ремонте'" << endl <<
 		"8-Поиск компрессорных станций" << endl <<
 		"9-Удалить объекты" << endl <<
-		"10-Сохранить в файл" << endl <<
-		"11-Загрузить из файла" << endl <<
-		"12-Открыть меню" << endl <<
+		"10-Просмотр газотранспортной сети" << endl <<
+		"11-Топологическая сортировка" << endl <<
+		"12-Сохранить в файл" << endl <<
+		"13-Загрузить из файла" << endl <<
+		"14-Открыть меню" << endl <<
 		"0-Выход из программы" << endl;
 }
 
 int MakeStep()      // Функция, возвращающая число-действие, которое хочет совершить пользователь
 {
 	cout << "Какое действие вы хотите сделать?" << endl;
-	int a = GetNumber(0, 12);
+	int a = GetNumber(0, 14);
 	return a;
 }
 
@@ -435,6 +409,7 @@ int main()
 	setlocale(LC_ALL, "Russian");          //Подключение русского языка
 	vector <Pipe> pipes;                       //вектор для хранения труб
 	vector <KS> ks;                            //вектор для хранения КС
+	Graph GasNetwork;
 	Menu();                                  //показываем меню            
 	while (1)                   
 	{
@@ -448,7 +423,7 @@ int main()
 			NewKS(ks);        //Создаем новую кс
 			break;
 		case 3:
-			ConnectKSbyPipe(pipes, ks);
+			GasNetwork.ConnectKSbyPipe(pipes, ks);
 			break;
 		case 4:                                  //Вывод списка объектов в консоль
 			PrintData(pipes, ks);
@@ -500,12 +475,24 @@ int main()
 		}
 		break;
 		case 10:
+		{
+			GasNetwork.CreateGraph(pipes,ks);
+			GasNetwork.PrintGraph();
+		}
+		break;
+		case 11:
+		{
+			GasNetwork.CreateGraph(pipes, ks);
+			GasNetwork.TopologicalSort();
+		}
+		break;
+		case 12:
 			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
 			break;
-		case 11:
+		case 13:
 			DownloadSaves(pipes, ks);    //загрузка данных из файла
 			break;
-		case 12:                          //Показ меню
+		case 14:                          //Показ меню
 			Menu();
 			break;
 		case 0:
