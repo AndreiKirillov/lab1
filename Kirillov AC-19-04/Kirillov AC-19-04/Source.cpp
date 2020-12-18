@@ -274,7 +274,7 @@ vector<int> UserChooseKS(const vector<KS>& ks, int MaxPossibleValue)
 	}
 }
 
-void DeletePipes(vector<Pipe>& p)
+void DeletePipes(vector<Pipe>& p)        //Удаление труб
 {
 	vector<int> pipe_indexes = FindPipe(p,p.size());
 	for (int i = 0; i < p.size(); i++)
@@ -293,15 +293,21 @@ void DeletePipes(vector<Pipe>& p)
 	}
 }
 
-void DeleteKS(vector<KS>& ks)
+void DeleteKS(vector<KS>& ks, vector<Pipe>& p)      //Удаление кс
 {
 	vector<int> ks_indexes = UserChooseKS(ks, ks.size());
 	for (int i = 0; i < ks.size(); i++)
 	{
 		for (int j = 0; j < ks_indexes.size(); j++)
 		{
-			if (ks[i].id == ks_indexes[j] + 1)
+			if (ks[i].id == ks_indexes[j] + 1)           
 			{
+				for (auto& pipe : p)              //Если кс задействована в сети, то надо удалить связи труб с ней
+					if (pipe.input == ks[i].id || pipe.output == ks[i].id)
+					{
+						pipe.input = 0;
+						pipe.output = 0;
+					}
 				ks.erase(ks.begin() + i);
 			}
 		}
@@ -470,7 +476,7 @@ int main()
 			}
 			else
 			{
-				DeleteKS(ks);
+				DeleteKS(ks, pipes);
 			}
 		}
 		break;
