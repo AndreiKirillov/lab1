@@ -55,7 +55,25 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 	{
 		matrix[p[pipe_id-1].input - 1][p[pipe_id-1].output - 1] = 1;      //Добавляем связь
 	}
+	if (Pipes_in_Graph.size() == 0)
+		EmptyGraph = true;            //Информация, что граф пустой
 	Matrix = matrix;         //Присваиваем готовую матрицу полю класса
+}
+
+bool Graph::CheckLine(int index, string parametr)
+{
+	if (parametr == "line")
+	{
+		for (int j = 0; j < Matrix.size(); j++)
+			if (Matrix[index][j] > 0)
+				return true;
+	}
+	if (parametr == "column")
+	{
+		for (int i = 0; i < Matrix.size(); i++)
+			if (Matrix[i][index] > 0)
+				return true;
+	}
 }
 
 void Graph::PrintGraph()        //Функция вывода графа в консоль
@@ -132,53 +150,88 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	//return map<int, int>();
 }
 
-//bool Graph::CheckCycle()
-//{
-//	/*for (int a = 0; a < Matrix.size(); a++)
-//		for (int b = 0; b < Matrix[a].size(); b++)
-//		{
-//			bool WhitePeak = true;
-//			if(Matrix[a][b]=1)
-//			{
-//				do
-//				{
-//
-//				}while(WhitePeak)
-//			}
-//		}*/
-//	bool WhitePeak = true;
-//	vector<int> copy_of_ks;
-//	for (auto& ks : KS_in_Graph)
-//	{
-//		copy_of_ks.push_back(ks);
-//	}
-//	//while (WhitePeak)
-//	//{
-//		for (int grey_ks : KS_in_Graph)
-//		{
-//			vector<int> GreyPeak;
-//			GreyPeak.push_back(grey_ks - 1);//делаем первую вершину серой
-//			int i=0;
-//			bool possibility = true;
-//			bool grey_peak_found = false;
-//			do
-//			{
-//
-//				if (Matrix[grey_ks - 1][i] == 1)
-//				{
-//					for (auto& it : GreyPeak)
-//						if (i == it)
-//							grey_peak_found = true;
-//					grey_ks = i + 1;
-//				}
-//				i++;
-//			} while (i < Matrix.size() && possibility ==true);
-//			//for (int i = 0; i < Matrix.size(); i++)  //проходим по строке с серой вершиной
-//			//{
-//			//	if(Matrix[ks-1][i]!=1 &&)
-//			//	Matrix[ks - 1][i]
-//			//}
-//		}
-//	//}
-//	return false;
-//}
+void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
+{
+	CreateGraph(p, ks);
+	if (EmptyGraph)
+		cout << "Невозможно расчитать максимальный поток, потому что в сети нет объектов!" << endl;
+	else
+	{
+		PrintGraph();
+		vector<vector<int>> WeightMatrix;
+	}
+}
+
+bool Graph::CheckCycle()
+{
+	
+	//bool WhitePeak = true;
+	//vector<int> copy_of_ks;
+	//for (auto& ks : KS_in_Graph)
+	//{
+	//	copy_of_ks.push_back(ks);
+	//}
+	////while (WhitePeak)
+	////{
+	//	for (int grey_ks : KS_in_Graph)
+	//	{
+	//		vector<int> GreyPeak;
+	//		GreyPeak.push_back(grey_ks - 1);//делаем первую вершину серой
+	//		int i=0;
+	//		bool possibility = true;
+	//		bool grey_peak_found = false;
+	//		do
+	//		{
+
+	//			if (Matrix[grey_ks - 1][i] == 1)
+	//			{
+	//				for (auto& it : GreyPeak)
+	//					if (i == it)
+	//						grey_peak_found = true;
+	//				grey_ks = i + 1;
+	//			}
+	//			i++;
+	//		} while (i < Matrix.size() && possibility ==true);
+	//		//for (int i = 0; i < Matrix.size(); i++)  //проходим по строке с серой вершиной
+	//		//{
+	//		//	if(Matrix[ks-1][i]!=1 &&)
+	//		//	Matrix[ks - 1][i]
+	//		//}
+	//	}
+	////}
+	
+	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
+	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
+	set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
+	set<int> GreyKS;
+	int index_i, index_j;
+	do//Пока есть неиспользованные вершины
+	{
+	skip:                     //Лейбл для goto
+		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
+		{
+			GreyKS = { -1 };
+			GreyKS.insert(ks - 1);//Помечаем начальную вершину
+			bool VoidLine = true;         //Если строка только с 0
+			bool DeletedElement = false;  //Если удалили вершину
+			for (int j = 0; j < Matrix_Copy[ks - 1].size(); j++)   //Проверяем строку на занулённость
+			{
+				if (Matrix_Copy[ks - 1][j] == 1)
+					VoidLine = false;
+			}
+			if (VoidLine == true)    //Если строка из нулей
+			{
+				//SortedKS.emplace(NumberOfKS, ks); //Добавляем вершину в список отсортированных
+				NumberOfKS--;                     //Уменьшаем
+				for (int i = 0; i < Matrix_Copy.size(); i++)
+					Matrix_Copy[i][ks - 1] = 0;               //Зануляем элементы использованной вершины
+				CopyKS.erase(ks);                 //Помечаем вершину как использованную
+				DeletedElement = true;
+			}
+			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
+				goto skip;
+		}
+	} while (NumberOfKS > 0);
+	
+	return false;
+}
