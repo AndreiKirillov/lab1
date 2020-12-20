@@ -230,9 +230,9 @@ void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
 	}
 }
 
-int Graph::ShortestWay(int v, int end, const vector<Pipe>& p, const vector<KS>& ks)//v - индекс начальной вершины
+int Graph::ShortestWay(int v, int end)//v - индекс начальной вершины
 {
-	CreateGraph(p, ks);
+	//CreateGraph(p, ks);
 	//int C[MAX_N][MAX_N];    // ћатрица "пропускных способностей"
 	//int F[MAX_N][MAX_N];    // ћатрица "текущего потока в графе"
 	//int P[MAX_N][MAX_N];    // ћатрица "стоимости (рассто€ний)"
@@ -246,9 +246,6 @@ int Graph::ShortestWay(int v, int end, const vector<Pipe>& p, const vector<KS>& 
 	int NumberOfKS = KS_in_Graph.size();
 	int NumberOfPipes = Pipes_in_Graph.size();
 	vector<int> Distance(NumberOfKS, inf);      //храним рассто€ни€ до вершин
-	//нужно пронумеровать вершины от 0 до n, и хранить соответствие с id
-	for (int i : KS_in_Graph)
-		ReNumbered_ks.push_back(i);    //«десь индекс вектора - св€зан с id компрессорок
 	/////
 	if (v < NumberOfKS && v != end)
 	{

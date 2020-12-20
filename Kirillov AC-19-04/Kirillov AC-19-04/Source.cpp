@@ -495,7 +495,9 @@ int main()
 		break;
 		case 12:
 		{
-			GasNetwork.ShortestWay(1, 3, pipes, ks);
+			GasNetwork.CreateGraph(pipes, ks);
+			int a=GasNetwork.ShortestWay(0, 1);
+			cout << a;
 		}
 		break;
 		case 13:

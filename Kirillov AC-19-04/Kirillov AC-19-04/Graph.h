@@ -31,6 +31,6 @@ public:
     bool CheckCycle();      //Проверка на циклы
     void TopologicalSort(); //Топологическая сортировка
     void MaxFlow(const vector<Pipe>& p, const vector<KS>& ks);   //Функция расчёта максимального потока сети
-    int ShortestWay(int v, int end, const vector<Pipe>& p, const vector<KS>& ks);
+    int ShortestWay(int v, int end);
 };
 
