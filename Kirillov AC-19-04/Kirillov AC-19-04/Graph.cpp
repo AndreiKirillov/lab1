@@ -2,8 +2,9 @@
 #include"Source.h"
 #include"Pipe.h"
 #include"KS.h"
-#include <vector>
+#include<vector>
 #include<set>
+#include<queue>
 
 void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             //Функция добавления связи между кс
 {
@@ -30,11 +31,37 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 		}
 		if (a >= 0 && b >= 0 && a != b && pipe >= 0 && !PotentialError)       //Если всё нормально
 		{
+			edge new_edge;
 			p[pipe].input = a + 1;       //Храним id
 			p[pipe].output = b + 1;
-			Pipes_in_Graph.insert(pipe + 1);
-			KS_in_Graph.insert(a + 1);
-			KS_in_Graph.insert(b + 1);
+			Pipes_in_Graph.insert(pipe + 1); 
+			if (KS_in_Graph.find(a) != KS_in_Graph.end()) //Если данная кс уже есть в сети
+			{
+				for (int i = 0; i < ReNumbered_ks.size(); i++)  //Ищем когда добавилась эта кс
+					if (ReNumbered_ks[i] = a)
+						new_edge.a = i;      //находим номер нужной нам кс//индекс и есть порядковый номер
+			}
+			else
+			{
+				KS_in_Graph.insert(a + 1);           //добавляем начальную вершину к общему списку вершин
+				ReNumbered_ks.push_back(a + 1);      //Индекс этого элемента в векторе будет порядковым номером
+				new_edge.a = ReNumbered_ks.size() - 1;   
+			}
+			//Тоже самое для конечной кс
+			if (KS_in_Graph.find(b) != KS_in_Graph.end()) 
+			{
+				for (int i = 0; i < ReNumbered_ks.size(); i++)  
+					if (ReNumbered_ks[i] = b)
+						new_edge.b = i;     
+			}
+			else
+			{
+				KS_in_Graph.insert(b + 1);           
+				ReNumbered_ks.push_back(b + 1);      
+				new_edge.b = ReNumbered_ks.size() - 1;
+			}
+			new_edge.cost = p[pipe].length;
+			All_edges.push_back(new_edge);
 		}
 		else
 		{
@@ -46,7 +73,7 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 }
 
 void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция создания матрицы смежности
-{
+{//Переделывать
 	vector<vector<int>> matrix(ks.size(), vector<int>(ks.size()));      //Создаем матрицу исходя из кол-ва кс в базе
 	for (int i = 0; i < ks.size(); i++)
 		for (int j = 0; j < ks.size(); j++)
@@ -58,6 +85,11 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 	if (Pipes_in_Graph.size() == 0)
 		EmptyGraph = true;            //Информация, что граф пустой
 	Matrix = matrix;         //Присваиваем готовую матрицу полю класса
+	WeightMatrix = Matrix;
+	for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
+	{
+		WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
+	}
 }
 
 bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
@@ -115,7 +147,7 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	map<int, int> SortedKS;     //ключ - номер вершины, значение - id КС
 	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
 	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
-	set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
+	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
 	do//Пока есть неиспользованные вершины
 	{
 		skip:                     //Лейбл для goto
@@ -198,9 +230,69 @@ void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
 	}
 }
 
+int Graph::ShortestWay(int v, int end, const vector<Pipe>& p, const vector<KS>& ks)//v - индекс начальной вершины
+{
+	CreateGraph(p, ks);
+	//int C[MAX_N][MAX_N];    // Матрица "пропускных способностей"
+	//int F[MAX_N][MAX_N];    // Матрица "текущего потока в графе"
+	//int P[MAX_N][MAX_N];    // Матрица "стоимости (расстояний)"
+	//int push[MAX_N];        // Поток в вершину [v] из начальной точки
+	//int mark[MAX_N];        // Отметки на вершинах, в которых побывали
+	//int pred[MAX_N];        // Откуда пришли в вершину [v] (предок)
+	//int dist[MAX_N];        // Расстояние до вершины [v] из начальной точки
+	//int N, M, s, t;         // Кол-во вершин, ребер, начальная и конечные точки
+	//int max_flow;
+	const int inf = 100000000;   //Бесконечность
+	int NumberOfKS = KS_in_Graph.size();
+	int NumberOfPipes = Pipes_in_Graph.size();
+	vector<int> Distance(NumberOfKS, inf);      //храним расстояния до вершин
+	//нужно пронумеровать вершины от 0 до n, и хранить соответствие с id
+	for (int i : KS_in_Graph)
+		ReNumbered_ks.push_back(i);    //Здесь индекс вектора - связан с id компрессорок
+	/////
+	if (v < NumberOfKS && v != end)
+	{
+		Distance[v] = 0;
+		for (int i = 0; i < NumberOfKS - 1; ++i)
+			//for (int j = 0; j < NumberOfPipes; ++j)
+			for (int j = 0; j < NumberOfPipes; ++j)
+				if (Distance[All_edges[j].a] < inf)
+					Distance[All_edges[j].b] = min(Distance[All_edges[j].b], Distance[All_edges[j].a] + All_edges[j].cost);
+				//if (Distance[p[pipe - 1].input] < inf)
+					//Distance[p[pipe - 1].output] = min(Distance[p[pipe - 1].output], Distance[p[pipe - 1].input] + p[pipe - 1].length);
+		return Distance[end];
+	}
+	/*for (int i = 0; i < KS_in_Graph.size(); i++)
+	{
+		mark[i] = 0;
+		push[i] = 0;
+		pred[i] = 0;
+		dist[i] = MAX_VAL;
+	}
+	queue<int> Q;
+	mark[s] = 1;
+	pred[s] = s;
+	push[s] = MAX_VAL;
+
+	Q.push(s);
+	while (!mark[t] && !Q.empty())
+	{
+		int u = Q.front(); Q.pop();
+		for (int v = 1; v < N; v++)
+			if (!mark[v] && (C[u][v] - F[u][v] > 0))
+			{
+				push[v] = min(push[u], C[u][v] - F[u][v]);
+				mark[v] = 1;
+				pred[v] = u;
+				Q.push(v);
+			}
+	}
+
+	return mark[t];*/
+}
+
 bool Graph::CheckCycle()
 {
-	
 	//bool WhitePeak = true;
 	//vector<int> copy_of_ks;
 	//for (auto& ks : KS_in_Graph)
@@ -238,7 +330,7 @@ bool Graph::CheckCycle()
 	
 	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
 	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
-	set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
+	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
 	set<int> GreyKS;
 	int index_i, index_j;
 	do//Пока есть неиспользованные вершины
