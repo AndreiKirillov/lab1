@@ -60,20 +60,21 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 	Matrix = matrix;         //Присваиваем готовую матрицу полю класса
 }
 
-bool Graph::CheckLine(int index, string parametr)
+bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
 {
-	if (parametr == "line")
+	if (parametr == "line")//Чекаем строку
 	{
 		for (int j = 0; j < Matrix.size(); j++)
-			if (Matrix[index][j] > 0)
+			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
 				return true;
-	}
-	if (parametr == "column")
+	}else
+	if (parametr == "column")//Чекаем столбец
 	{
 		for (int i = 0; i < Matrix.size(); i++)
 			if (Matrix[i][index] > 0)
 				return true;
 	}
+	return false;//Если проверка ничего не выявила
 }
 
 void Graph::PrintGraph()        //Функция вывода графа в консоль
@@ -157,8 +158,43 @@ void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
 		cout << "Невозможно расчитать максимальный поток, потому что в сети нет объектов!" << endl;
 	else
 	{
-		PrintGraph();
-		vector<vector<int>> WeightMatrix;
+		vector<vector<int>> WeightMatrix = Matrix;//Матрица весов
+		for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
+		{
+			WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
+		}
+		set<int> KS_lines;         //Здесь кс, которые могут быть началом
+		set<int> KS_columns;       //концом
+		for (int beginning : KS_in_Graph)
+			if (CheckLine(beginning - 1, "line"))
+				KS_lines.insert(beginning);        //Добавляем кс, которые могут быть началом
+		for (int end : KS_in_Graph)
+			if (CheckLine(end - 1, "column"))
+				KS_lines.insert(end);              //Добавляем кс, которые могут быть концом
+		////////Взаимодействие с пользователем
+		PrintGraph();             //Показываем пользователю сеть
+		cout << "Выберите начальную кс, доступны: ";
+		for (int beginning : KS_lines)
+			cout << beginning << " ";       //Показываем возможные начальные вершины
+		int istok;      //Исток потока сети
+		while ((cin >> istok).fail() || KS_lines.find(istok) == KS_lines.end()) //Проверяем ввод на допустимость
+		{
+			cin.clear();
+			cin.ignore(32767, '\n');
+			cout << "Введите корректное число!" << endl;
+		}
+		cout << "Выберите конечную кс, доступны: ";
+		for (int end : KS_columns)             //Показываем возможные конечные вершины
+			cout << end << " ";
+		int stok;     //Сток потока сети
+		while ((cin >> stok).fail() || KS_columns.find(stok) == KS_columns.end()) //Проверяем ввод на допустимость
+		{
+			cin.clear();
+			cin.ignore(32767, '\n');
+			cout << "Введите корректное число!" << endl;
+		}
+		/////////////Закончили операции с пользователем
+
 	}
 }
 

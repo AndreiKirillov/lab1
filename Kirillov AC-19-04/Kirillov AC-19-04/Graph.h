@@ -15,15 +15,15 @@ public:
     ///////Поля класса
     set<int> Pipes_in_Graph;         //Рёбра графа
     set<int> KS_in_Graph;            //Вершины графа
-    vector<vector<int>> Matrix;      //Матрица инциденций
+    vector<vector<int>> Matrix;      //Матрица смежности
     bool EmptyGraph;
     ///////Методы класса
-    void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks);
-    void CreateGraph(const vector<Pipe>& p, const vector<KS>& ks);
-    bool CheckLine(int index, string parametr);
-    void PrintGraph();
-    bool CheckCycle();
-    void TopologicalSort();
-    void MaxFlow(const vector<Pipe>& p, const vector<KS>& ks);
+    void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks);   //Соединение кс
+    void CreateGraph(const vector<Pipe>& p, const vector<KS>& ks);    //Создание матрицы смежности
+    bool CheckLine(int index, string parametr);                    //Вспомогательная функция
+    void PrintGraph();     //Вывод списков смежности в консоль
+    bool CheckCycle();      //Проверка на циклы
+    void TopologicalSort(); //Топологическая сортировка
+    void MaxFlow(const vector<Pipe>& p, const vector<KS>& ks);   //Функция расчёта максимального потока сети
 };
 
