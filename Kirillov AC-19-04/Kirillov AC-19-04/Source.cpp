@@ -319,7 +319,7 @@ void DeleteKS(vector<KS>& ks, vector<Pipe>& p)      //Удаление кс
 	}
 }
 
-void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функции сохранения
+void SaveData(const vector<Pipe>& p,const vector<KS>& ks, const Graph& g)       //Описание функции сохранения
 {
 	cout << "Введите название файла для сохранения" << endl;
 	string filename;
@@ -335,7 +335,13 @@ void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функц
 	else if (outf.is_open())
 	{
 		outf << p.size() << endl;     //В первую строку выводим кол-во труб
-		outf << ks.size() << endl;    //Во вторую кол-во КС                                    
+		outf << ks.size() << endl;    //Во вторую кол-во КС 
+		outf << g.Pipes_in_Graph.size() << endl;  //Сохраним основные параметры сети
+		outf << g.KS_in_Graph.size() << endl;
+		outf << g.ReNumbered_ks.size() << endl;
+		outf << g.KS_lines.size() << endl;
+		outf << g.KS_columns.size() << endl;
+		outf << g.All_edges.size() << endl;
 		for (i = 0; i < p.size(); i++)           //Выводим параметры каждой трубы по списку 
 		{
 			outf << p[i];
@@ -344,12 +350,13 @@ void SaveData(const vector<Pipe>& p,const vector<KS>& ks)       //Описание функц
 		{
 			outf << ks[i];
 		}
+		outf << g << endl;
 		cout << "Данные успешно сохранены!" << endl;
 	};
 	outf.close();
 }
 
-void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции загрузки   
+void DownloadSaves(vector<Pipe>& p, vector<KS>& ks, Graph& g)         //Описание функции загрузки   
 {
 	cout << "Введите название файла для загрузки" << endl;
 	string filename;
@@ -357,25 +364,61 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks)         //Описание функции з
 	filename += ".txt";
 	ifstream inf;
 	int i=0;
-	int SizePipes;
-	int SizeKS;
+	int SizePipes, SizeKS, SizePipes_in_Graph, SizeKS_in_Graph, SizeRenumberedKS, SizeKS_lines, SizeKS_columns, SizeAll_edges;
 	inf.open(filename);
 	if (inf.is_open())
 	{
 		inf >> SizePipes;                       //Считываем количество труб в переменную
 		inf >> SizeKS;                         //Теперь кол-во КС
+		inf >> SizePipes_in_Graph;
+		inf >> SizeKS_in_Graph;
+		inf >> SizeRenumberedKS;
+		inf >> SizeKS_lines;
+		inf >> SizeKS_columns;
+		inf >> SizeAll_edges;
 		if (SizePipes == 0 && SizeKS == 0)    //Если значения нулевые не загружаем данные 
 		{
 			cout << "Не удалось загрузить данные, файл пуст!" << endl;
 		}
 		else
 		{
+			int data;
 			p.resize(SizePipes);
 			ks.resize(SizeKS);
+			g.ReNumbered_ks.resize(SizeRenumberedKS);
+			g.All_edges.resize(SizeAll_edges);
 			for (i = 0; i < p.size(); i++)   //По порядку записываем данные в массив труб
 				inf >> p[i];
 			for (i = 0; i < ks.size(); i++)    //По порядку записываем данные в массив КС
 				inf >> ks[i];
+			for (i = 0; i < SizePipes_in_Graph;i++)
+			{
+				inf >> data;
+				g.Pipes_in_Graph.insert(data);
+			}
+			for (i = 0; i < SizeKS_in_Graph; i++)
+			{
+				inf >> data;
+				g.KS_in_Graph.insert(data);
+			}
+			for (i = 0; i < g.ReNumbered_ks.size(); i++)
+				inf >> g.ReNumbered_ks[i];
+			for (i = 0; i < SizeKS_lines; i++)
+			{
+				inf >> data;
+				g.KS_lines.insert(data);
+			}
+			for (i = 0; i < SizeKS_columns; i++)
+			{
+				inf >> data;
+				g.KS_columns.insert(data);
+			}
+			for (i = 0; i < g.ReNumbered_ks.size(); i++)
+			{
+				inf >> g.All_edges[i].a;
+				inf >> g.All_edges[i].b;
+				inf >> g.All_edges[i].cost;
+			}
 			cout << "Загрузка прошла успешно" << endl;
 		}
 	}
@@ -509,10 +552,10 @@ int main()
 		}
 		break;
 		case 13:
-			SaveData(pipes, ks);      //Сохранение данных в файл из массивов труб и КС
+			SaveData(pipes, ks, GasNetwork);      //Сохранение данных в файл из массивов труб и КС
 			break;
 		case 14:
-			DownloadSaves(pipes, ks);    //загрузка данных из файла
+			DownloadSaves(pipes, ks, GasNetwork);    //загрузка данных из файла
 			break;
 		case 15:                          //Показ меню
 			Menu();

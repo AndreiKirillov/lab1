@@ -1,5 +1,6 @@
 #pragma once
 #include<iostream>
+#include<fstream>
 #include"Source.h"
 #include"Pipe.h"
 #include"KS.h"
@@ -37,5 +38,6 @@ public:
     int ShortestWay(int v, int end);
     int ConvertKS(int ks_id); //Вспомогательная функция, конвертирует id кс в её порядковый номер
     map<int,int> UserChooseKS_inGraph();  //Взаимодействие с пользователем; он выбирает начальную и конечную вершины
+    friend ofstream& operator <<(ofstream& outf, const Graph& g);
 };
 

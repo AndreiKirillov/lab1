@@ -38,7 +38,7 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 			if (KS_in_Graph.find(a) != KS_in_Graph.end()) //≈сли данна€ кс уже есть в сети
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  //»щем когда добавилась эта кс
-					if (ReNumbered_ks[i] = a+1)
+					if (ReNumbered_ks[i] == a+1)
 						new_edge.a = i;      //находим номер нужной нам кс//индекс и есть пор€дковый номер
 				KS_lines.insert(a + 1);
 			}
@@ -53,7 +53,7 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 			if (KS_in_Graph.find(b) != KS_in_Graph.end()) 
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  
-					if (ReNumbered_ks[i] = b+1)
+					if (ReNumbered_ks[i] == b+1)
 						new_edge.b = i;  
 				KS_columns.insert(b + 1);
 			}
@@ -92,10 +92,10 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //‘ункци€
 		}
 		Matrix = matrix;         //ѕрисваиваем готовую матрицу полю класса
 		WeightMatrix = Matrix;
-		for (int pipe : Pipes_in_Graph)    //заполн€ем матрицу весов
-		{
-			WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //¬ качестве веса длина трубы
-		}
+		//for (int pipe : Pipes_in_Graph)    //заполн€ем матрицу весов
+		//{
+		//	WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //¬ качестве веса длина трубы
+		//}
 	}
 }
 
@@ -331,4 +331,25 @@ bool Graph::CheckCycle()
 	} while (NumberOfKS > 0);
 	
 	return false;
+}
+
+ofstream& operator<<(ofstream& outf, const Graph& g)
+{
+	for (int i : g.Pipes_in_Graph)
+		outf << i << endl;
+	for (int i : g.KS_in_Graph)
+		outf << i << endl;
+	for (int i = 0; i < g.ReNumbered_ks.size(); i++)
+		outf << g.ReNumbered_ks[i] << endl;
+	for (int i : g.KS_lines)
+		outf << i << endl;
+	for (int i : g.KS_columns)
+		outf << i << endl;
+	for (int i = 0; i < g.All_edges.size(); i++)
+	{
+		outf << g.All_edges[i].a << endl;
+		outf << g.All_edges[i].b << endl;
+		outf << g.All_edges[i].cost << endl;
+	}
+	return outf;
 }
