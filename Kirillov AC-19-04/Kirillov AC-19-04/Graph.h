@@ -6,6 +6,7 @@
 #include<string>
 #include<vector>
 #include<unordered_set>
+#include<set>
 #include<map>
 using namespace std;
 
@@ -16,6 +17,8 @@ public:
     unordered_set<int> Pipes_in_Graph;         //Рёбра графа
     unordered_set<int> KS_in_Graph;            //Вершины графа
     vector<int> ReNumbered_ks;         //храним порядок попадания кс в сеть(от 0)
+    set<int> KS_lines;         //Здесь кс, которые могут быть началом
+    set<int> KS_columns;       //концом
     vector<vector<int>> Matrix;      //Матрица смежности
     vector<vector<int>> WeightMatrix;
     struct edge {        //структура ребер графа, хранит упорядоченный номер input, output и length трубы в графе
@@ -32,5 +35,7 @@ public:
     void TopologicalSort(); //Топологическая сортировка
     void MaxFlow(const vector<Pipe>& p, const vector<KS>& ks);   //Функция расчёта максимального потока сети
     int ShortestWay(int v, int end);
+    int ConvertKS(int ks_id); //Вспомогательная функция, конвертирует id кс в её порядковый номер
+    map<int,int> UserChooseKS_inGraph();  //Взаимодействие с пользователем; он выбирает начальную и конечную вершины
 };
 

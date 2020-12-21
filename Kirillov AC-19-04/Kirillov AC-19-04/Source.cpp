@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include "Pipe.h"
 #include "KS.h"
 #include "Source.h"
@@ -496,8 +497,15 @@ int main()
 		case 12:
 		{
 			GasNetwork.CreateGraph(pipes, ks);
-			int a=GasNetwork.ShortestWay(0, 1);
-			cout << a;
+			if (GasNetwork.EmptyGraph)
+				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
+			else
+			{
+				map<int, int> a_b = GasNetwork.UserChooseKS_inGraph();
+				auto begin_end = a_b.begin();
+				int a = GasNetwork.ShortestWay(begin_end->first, begin_end->second);
+				cout << a;
+			}
 		}
 		break;
 		case 13:
