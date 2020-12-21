@@ -37,7 +37,7 @@ public:
     void MaxFlow(const vector<Pipe>& p, const vector<KS>& ks);   //Функция расчёта максимального потока сети
     int ShortestWay(int v, int end);
     int ConvertKS(int ks_id); //Вспомогательная функция, конвертирует id кс в её порядковый номер
-    map<int,int> UserChooseKS_inGraph();  //Взаимодействие с пользователем; он выбирает начальную и конечную вершины
+    int UserChooseKS_inGraph(set<int>& set_ks);  //Взаимодействие с пользователем; он выбирает начальную и конечную вершины
     friend ofstream& operator <<(ofstream& outf, const Graph& g);
 };
 

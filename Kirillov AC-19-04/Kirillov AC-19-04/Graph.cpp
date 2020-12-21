@@ -35,7 +35,7 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 			p[pipe].input = a + 1;       //Храним id
 			p[pipe].output = b + 1;
 			Pipes_in_Graph.insert(pipe + 1); 
-			if (KS_in_Graph.find(a) != KS_in_Graph.end()) //Если данная кс уже есть в сети
+			if (KS_in_Graph.find(a+1) != KS_in_Graph.end()) //Если данная кс уже есть в сети
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  //Ищем когда добавилась эта кс
 					if (ReNumbered_ks[i] == a+1)
@@ -50,7 +50,7 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 				KS_lines.insert(a + 1);
 			}
 			//Тоже самое для конечной кс
-			if (KS_in_Graph.find(b) != KS_in_Graph.end()) 
+			if (KS_in_Graph.find(b+1) != KS_in_Graph.end()) 
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  
 					if (ReNumbered_ks[i] == b+1)
@@ -82,7 +82,15 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 		EmptyGraph = true;//Информация, что граф пустой
 	else
 	{
+		//vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
+		//for (int i = 0; i < matrix.size(); i++)
+		//	for (int j = 0; j < matrix[i].size(); j++)
+		//		matrix[i][j] = 0;                //Зануляем все элементы
+		//for (auto ed : All_edges)
+		//	matrix[ed.a][ConvertKS(ed.b)] = 1;
+		//Matrix = matrix;
 		vector<vector<int>> matrix(ks.size(), vector<int>(ks.size()));      //Создаем матрицу исходя из кол-ва кс в базе
+
 		for (int i = 0; i < ks.size(); i++)
 			for (int j = 0; j < ks.size(); j++)
 				matrix[i][j] = 0;                         //Зануляем все элементы
@@ -91,7 +99,7 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 			matrix[p[pipe_id - 1].input - 1][p[pipe_id - 1].output - 1] = 1;      //Добавляем связь
 		}
 		Matrix = matrix;         //Присваиваем готовую матрицу полю класса
-		WeightMatrix = Matrix;
+		//WeightMatrix = Matrix;
 		//for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
 		//{
 		//	WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
@@ -138,7 +146,7 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 						endline = true;
 					}
 					else
-						cout << ", " << j;
+						cout << ", " << j+1;
 				}
 			if (endline)
 				cout << endl;
@@ -187,7 +195,6 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	{
 		cout << n.first << "\t" << n.second << endl;
 	}
-	//return map<int, int>();
 }
 
 void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
@@ -202,62 +209,42 @@ void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
 		{
 			WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
 		}
-		map<int, int> istok_and_stok = UserChooseKS_inGraph();
-
 	}
 }
 
-int Graph::ShortestWay(int v, int end)//v - индекс начальной вершины
+int Graph::ShortestWay(int v, int end)//v и end - порядковые номера начальной вершины и конечной
 {
 	const int inf = 100000000;   //Бесконечность
 	int NumberOfKS = KS_in_Graph.size();
 	int NumberOfPipes = Pipes_in_Graph.size();
 	vector<int> Distance(NumberOfKS, inf);      //храним расстояния до вершин
-	//if (v < NumberOfKS && v != end)
-	//{
 		Distance[v] = 0;
 		for (int i = 0; i < NumberOfKS - 1; ++i)
 			for (int j = 0; j < NumberOfPipes; ++j)
 				if (Distance[All_edges[j].a] < inf)
 					Distance[All_edges[j].b] = min(Distance[All_edges[j].b], Distance[All_edges[j].a] + All_edges[j].cost);
 		return Distance[end];
-	//}
-	
 }
 
 int Graph::ConvertKS(int ks_id)    //Принимаем id кс
 {
 	for (int i = 0; i < ReNumbered_ks.size(); i++)  
-		if (ReNumbered_ks[i] = ks_id)  
+		if (ReNumbered_ks[i] == ks_id)  
 			return i;                 //Возвращаем порядковый номер кс
 }
 
-map<int,int> Graph::UserChooseKS_inGraph()
+int Graph::UserChooseKS_inGraph(set<int>& set_ks)
 {
-	PrintGraph();             //Показываем пользователю сеть
-	cout << "Выберите начальную кс, доступны: ";
-	for (int beginning : KS_lines)
-		cout << beginning << " ";       //Показываем возможные начальные вершины
-	int istok;      //Исток потока сети
-	while ((cin >> istok).fail() || KS_lines.find(istok) == KS_lines.end()) //Проверяем ввод на допустимость
+	for (int i : set_ks)
+		cout << i << " ";       //Показываем возможные вершины
+	int choosen_ks;      
+	while ((cin >> choosen_ks).fail() || set_ks.find(choosen_ks) == set_ks.end()) //Проверяем ввод на допустимость
 	{
 		cin.clear();
 		cin.ignore(32767, '\n');
 		cout << "Введите корректное число!" << endl;
 	}
-	cout << "Выберите конечную кс, доступны: ";
-	for (int end : KS_columns)             //Показываем возможные конечные вершины
-		cout << end << " ";
-	int stok;     //Сток потока сети
-	while ((cin >> stok).fail() || KS_columns.find(stok) == KS_columns.end() || stok==istok) //Проверяем ввод на допустимость
-	{
-		cin.clear();
-		cin.ignore(32767, '\n');
-		cout << "Введите корректное число!" << endl;
-	}
-	map<int, int> m;
-	m.emplace(istok, stok);
-	return m;
+	return ConvertKS(choosen_ks);  //Возвращаем порядковый номер
 }
 
 bool Graph::CheckCycle()

@@ -544,10 +544,19 @@ int main()
 				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
 			else
 			{
-				map<int, int> a_b = GasNetwork.UserChooseKS_inGraph();
-				auto begin_end = a_b.begin();
-				int a = GasNetwork.ShortestWay(begin_end->first, begin_end->second);
-				cout << a;
+				GasNetwork.PrintGraph();             //Показываем пользователю сеть
+				cout << "Выберите начальную кс, доступны: ";
+				int beginning = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_lines);
+				cout << "Выберите конечную кс, доступны: ";
+				int end = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_columns);
+				if (beginning != end)
+				{
+					int Length = GasNetwork.ShortestWay(beginning, end);//GasNetwork.ConvertKS(beginning), GasNetwork.ConvertKS(end));
+					cout << "Кратчайший путь между вершинами равен " << endl;
+					cout << Length << endl;
+				}
+				else
+					cout << "Начальная и конечная вершина совпадают, попробуйте снова!" << endl;
 			}
 		}
 		break;
