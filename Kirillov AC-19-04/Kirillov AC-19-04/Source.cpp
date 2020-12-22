@@ -547,13 +547,11 @@ int main()
 		break;
 		case 10:
 		{
-			GasNetwork.CreateGraph(pipes,ks);
 			GasNetwork.PrintGraph();
 		}
 		break;
 		case 11:
 		{
-			GasNetwork.CreateGraph(pipes, ks);
 			GasNetwork.TopologicalSort();
 		}
 		break;

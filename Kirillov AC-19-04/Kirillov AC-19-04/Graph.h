@@ -29,7 +29,7 @@ public:
     bool EmptyGraph;
     ///////Методы класса
     void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks);   //Соединение кс
-    void CreateGraph(const vector<Pipe>& p, const vector<KS>& ks);    //Создание матрицы смежности
+    void CreateGraph();    //Создание матрицы смежности
     //bool CheckLine(int index, string parametr);                    //Вспомогательная функция
     void PrintGraph();     //Вывод списков смежности в консоль
     bool CheckCycle();      //Проверка на циклы
