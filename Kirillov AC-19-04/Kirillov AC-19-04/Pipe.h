@@ -11,6 +11,7 @@ public:
 	bool remont;
 	int input;
 	int output;
+	static int MAX_ID;
 	Pipe();
 	void ChangeStatus();
 	friend std::ostream& operator <<(std::ostream& out, const Pipe& p);     //Для вывода полей класса в консоль

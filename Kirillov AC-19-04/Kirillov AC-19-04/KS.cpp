@@ -4,13 +4,16 @@
 #include <string>
 using namespace std;
 
+int KS::MAX_ID = 0;
+
 KS::KS()
 {
-	id = 0;
+	id = MAX_ID;
 	name = "Unknown";
 	number_ceh = 0;
 	number_ceh_inWork = 0;
 	efficiency = 0;
+	MAX_ID++;
 }
 
 void KS::SetName()

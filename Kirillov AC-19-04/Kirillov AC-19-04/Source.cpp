@@ -29,7 +29,8 @@ void NewPipe(vector<Pipe>& p)          //Функция создания новой трубы
 	cout << "Введите диаметр трубы:";
 	p1.diametr=GetNumber(1, 10000000);
 	p.push_back(p1);               //Добавляем в конец вектора труб
-	p[p.size() - 1].id=p.size();
+	//p[p.size() - 1].id=p.size();
+
 }
 
 void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорной станции
@@ -42,7 +43,7 @@ void NewKS(vector<KS>& ks)                  //Функция создания новой компрессорн
 	ks1.SetNumber_ceh_inWork(GetNumber(0.0, 100000.0));
 	ks1.efficiency= (ks1.number_ceh_inWork / ks1.number_ceh) * 100;
 	ks.push_back(ks1);                       //добавляем переменную в конец вектора
-	ks[ks.size() - 1].id=ks.size();
+	//ks[ks.size() - 1].id=ks.size();
 }    
 
 void PrintData(const vector<Pipe>& p,const vector<KS>& ks)   //Функция для вывода данных в консоль
@@ -184,7 +185,10 @@ vector<int> FindPipe(const vector<Pipe>& p, int MaxPossibleValue)        //Функц
 			cout << "Можно выбрать только одну трубу!" << endl;
 			cout << "Введите ID трубы, которую хотите выбрать (диапазон " << 1 << "-" << p.size() << ")" << endl;
 			int pipe_id = GetNumber(1, p.size());
-			res.push_back(pipe_id-1);
+			for (int i = 0; i < p.size(); i++)
+				if (p[i].id == pipe_id)
+					res.push_back(i);
+			//res.push_back(pipe_id-1);
 			return res;
 		}
 		else
@@ -244,7 +248,11 @@ vector<int> UserChooseKS(const vector<KS>& ks, int MaxPossibleValue)
 			{                                                 //Ищем кс по желанию пользователя
 				id = GetNumber(0, ks.size());
 				if (id != 0)
-					ks_indexes.push_back(id - 1);
+				{
+					for(int i=0;i<ks.size();i++)
+						if(ks[i].id==id)
+							ks_indexes.push_back(i);
+				}
 			} while (id != 0 && ks_indexes.size()<MaxPossibleValue);
 		}
 	}else
@@ -289,18 +297,16 @@ void DeletePipes(vector<Pipe>& p, Graph& g)        //Удаление труб
 					g.Pipes_in_Graph.erase(pipe_indexes[j] + 1);
 				int value = 0;
 				for (int k = 0; k < g.All_edges.size(); k++)
-					if (g.All_edges[k].a == pipe_indexes[j] + 1 || g.All_edges[k].b == pipe_indexes[j] + 1)
+					if (g.All_edges[k].a == p[pipe_indexes[j]].id || g.All_edges[k].b == pipe_indexes[j] + 1)
 						value++;
-				if(value>0 && value<2)
-
 				p.erase(p.begin() + i);
 			}
 		}
 	}
-	for (int i = 0; i < p.size(); i++)
+	/*for (int i = 0; i < p.size(); i++)
 	{
 		p[i].id = i + 1;
-	}
+	}*/
 }
 
 void DeleteKS(vector<KS>& ks, vector<Pipe>& p, Graph& g)      //Удаление кс
@@ -321,10 +327,10 @@ void DeleteKS(vector<KS>& ks, vector<Pipe>& p, Graph& g)      //Удаление кс
 					}
 				if (g.KS_in_Graph.find(ks_indexes[j]) != g.KS_in_Graph.end())
 					g.KS_in_Graph.erase(ks_indexes[j] + 1);
-				if (g.KS_lines.find(ks_indexes[j]) != g.KS_lines.end())
+				/*if (g.KS_lines.find(ks_indexes[j]) != g.KS_lines.end())
 					g.KS_lines.erase(ks_indexes[j] + 1);
 				if (g.KS_columns.find(ks_indexes[j]) != g.KS_columns.end())
-					g.KS_columns.erase(ks_indexes[j] + 1);
+					g.KS_columns.erase(ks_indexes[j] + 1);*/
 				for (int i = 0; i < g.ReNumbered_ks.size(); i++)
 					if (g.ReNumbered_ks[i] == ks_indexes[j] + 1)
 						g.ReNumbered_ks.erase(g.ReNumbered_ks.begin() + i);
@@ -332,10 +338,10 @@ void DeleteKS(vector<KS>& ks, vector<Pipe>& p, Graph& g)      //Удаление кс
 			}
 		}
 	}
-	for (int i = 0; i < ks.size(); i++)
+	/*for (int i = 0; i < ks.size(); i++)
 	{
 		ks[i].id = i + 1;
-	}
+	}*/
 }
 
 void SaveData(const vector<Pipe>& p,const vector<KS>& ks, const Graph& g)       //Описание функции сохранения
@@ -358,8 +364,6 @@ void SaveData(const vector<Pipe>& p,const vector<KS>& ks, const Graph& g)       
 		outf << g.Pipes_in_Graph.size() << endl;  //Сохраним основные параметры сети
 		outf << g.KS_in_Graph.size() << endl;
 		outf << g.ReNumbered_ks.size() << endl;
-		outf << g.KS_lines.size() << endl;
-		outf << g.KS_columns.size() << endl;
 		outf << g.All_edges.size() << endl;
 		for (i = 0; i < p.size(); i++)           //Выводим параметры каждой трубы по списку 
 		{
@@ -383,7 +387,7 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks, Graph& g)         //Описание
 	filename += ".txt";
 	ifstream inf;
 	int i=0;
-	int SizePipes, SizeKS, SizePipes_in_Graph, SizeKS_in_Graph, SizeRenumberedKS, SizeKS_lines, SizeKS_columns, SizeAll_edges;
+	int SizePipes, SizeKS, SizePipes_in_Graph, SizeKS_in_Graph, SizeRenumberedKS, SizeAll_edges;
 	inf.open(filename);
 	if (inf.is_open())
 	{
@@ -392,8 +396,6 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks, Graph& g)         //Описание
 		inf >> SizePipes_in_Graph;
 		inf >> SizeKS_in_Graph;
 		inf >> SizeRenumberedKS;
-		inf >> SizeKS_lines;
-		inf >> SizeKS_columns;
 		inf >> SizeAll_edges;
 		if (SizePipes == 0 && SizeKS == 0)    //Если значения нулевые не загружаем данные 
 		{
@@ -422,16 +424,6 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks, Graph& g)         //Описание
 			}
 			for (i = 0; i < g.ReNumbered_ks.size(); i++)
 				inf >> g.ReNumbered_ks[i];
-			for (i = 0; i < SizeKS_lines; i++)
-			{
-				inf >> data;
-				g.KS_lines.insert(data);
-			}
-			for (i = 0; i < SizeKS_columns; i++)
-			{
-				inf >> data;
-				g.KS_columns.insert(data);
-			}
 			for (i = 0; i < g.ReNumbered_ks.size(); i++)
 			{
 				inf >> g.All_edges[i].a;
@@ -444,6 +436,43 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks, Graph& g)         //Описание
 	else
 		cout << "Не удалось произвести загрузку, введите корректное имя файла!" << endl;
 	inf.close();
+}
+
+map<int,int> UserChooseGraphKS(Graph& g )      //Функция, где пользователь выбирает начальную и конечную вершины графа
+{
+	map<int, int> Result;
+	set<int> possible_start;     //Возможные начальные вершины
+	set<int> possible_end;        //Конечные
+	cout << "Выберите начальную кс, доступны: ";   //выбирает начало
+	int beginning;
+	for (int i = 0; i < g.Matrix.size(); i++)
+		if (g.CheckLine(i, "line"))
+		{
+			cout << g.ReNumbered_ks[i]<<" ";
+			possible_start.insert(g.ReNumbered_ks[i]);
+		}
+	while ((cin >> beginning).fail() || possible_start.find(beginning) == possible_start.end()) //Проверяем ввод на допустимость
+	{
+		cin.clear();
+		cin.ignore(32767, '\n');
+		cout << "Введите корректное число!" << endl;
+	}
+	cout << "Выберите конечную кс, доступны: ";// выбирает конец
+	int end;
+	for (int i = 0; i < g.Matrix.size(); i++)
+		if (g.CheckLine(i, "column"))
+		{
+			cout << g.ReNumbered_ks[i]<<" ";
+			possible_end.insert(g.ReNumbered_ks[i]);
+		}
+	while ((cin >> end).fail() || possible_end.find(end) == possible_end.end()) //Проверяем ввод на допустимость
+	{
+		cin.clear();
+		cin.ignore(32767, '\n');
+		cout << "Введите корректное число!" << endl;
+	}
+	Result.emplace(g.ConvertKS(beginning), g.ConvertKS(end));
+	return Result;
 }
 
 void Menu()          //Функция вывода меню, выводит список возможных действий пользователя
@@ -563,17 +592,15 @@ int main()
 			else
 			{
 				GasNetwork.PrintGraph();             //Показываем пользователю сеть
-				cout << "Выберите начальную кс, доступны: ";
-				int beginning = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_lines);
-				cout << "Выберите конечную кс, доступны: ";
-				int end = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_columns);
-				if (beginning != end)
+				map<int, int> peaks = UserChooseGraphKS(GasNetwork);
+				auto it = peaks.begin();
+				if (it->first != it->second)
 				{
-					int Length = GasNetwork.ShortestWay(beginning, end);
+					int Length = GasNetwork.ShortestWay(it->first, it->second);
 					if (Length == 100000000)
 						cout << "Между данными компрессорными станциями нет пути!" << endl;
 					else
-						cout << "Кратчайший путь между вершинами равен " << Length << endl;
+						cout << "Кратчайший путь между вершинами равен " << Length << endl << endl;
 				}
 				else
 					cout << "Начальная и конечная вершина совпадают, попробуйте снова!" << endl;
@@ -587,14 +614,13 @@ int main()
 				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
 			else
 			{
-				cout << "Выберите начальную кс, доступны: ";
-				int beginning = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_lines);
-				cout << "Выберите конечную кс, доступны: ";
-				int end = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_columns);
-				if (beginning != end)
+				map<int, int> peaks = UserChooseGraphKS(GasNetwork);
+				auto it = peaks.begin();
+				
+				/*if (beginning != end)
 				{
 					GasNetwork.MaxFlow(beginning, end);
-				}
+				}*/
 			}
 		}
 		break;

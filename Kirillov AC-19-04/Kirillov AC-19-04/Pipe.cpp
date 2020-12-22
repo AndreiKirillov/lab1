@@ -3,14 +3,17 @@
 #include <fstream>
 using namespace std;
 
+int Pipe::MAX_ID = 0;
+
 Pipe::Pipe()
 {
-	id = 0;
+	id = MAX_ID;
 	length = 0;
 	diametr = 0;
 	remont = 0;
 	input = 0;
 	output = 0;
+	MAX_ID++;
 }
 
 void Pipe::ChangeStatus()   //Меняем статус ремонта

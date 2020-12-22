@@ -18,13 +18,13 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 		cout << "Выберите начальную компрессорную станцию:" << endl;            // Пользователь выбирает нужные объекты
 		vector<int> begin = UserChooseKS(ks, 1);
 		int a = begin[0];
-		cout << "Выберите конечную компрессорную станцию:" << endl;            //////Сделать потом чтоб не заставлять выбирать если ошибка
+		cout << "Выберите конечную компрессорную станцию:" << endl;            
 		vector<int> end = UserChooseKS(ks, 1);
 		int b = end[0];                                                             // а, b, pipe - индекс
 		cout << "Выберите трубу для соединения компрессорных станций:" << endl;
 		vector<int> v = FindPipe(p, 1);
 		int pipe = v[0];   
-		if (p[pipe].remont == true || Pipes_in_Graph.find(pipe + 1) != Pipes_in_Graph.end())
+		if (p[pipe].remont == true || Pipes_in_Graph.find(p[pipe].id) != Pipes_in_Graph.end())
 		{
 			PotentialError = true;            //Труба не должна быть в ремонте или уже быть использованной в сети
 			cout << "Нельзя использовать данную трубу!" << endl;
@@ -32,37 +32,33 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 		if (a >= 0 && b >= 0 && a != b && pipe >= 0 && !PotentialError)       //Если всё нормально
 		{
 			edge new_edge;
-			p[pipe].input = a + 1;       //Храним id
-			p[pipe].output = b + 1;
-			Pipes_in_Graph.insert(pipe + 1); 
-			if (KS_in_Graph.find(a+1) != KS_in_Graph.end()) //Если данная кс уже есть в сети
+			p[pipe].input = ks[a].id;       //Храним id
+			p[pipe].output = ks[b].id;
+			Pipes_in_Graph.insert(p[pipe].id); 
+			if (KS_in_Graph.find(ks[a].id) != KS_in_Graph.end()) //Если данная кс уже есть в сети
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  //Ищем когда добавилась эта кс
-					if (ReNumbered_ks[i] == a+1)
+					if (ReNumbered_ks[i] == ks[a].id)
 						new_edge.a = i;      //находим номер нужной нам кс//индекс и есть порядковый номер
-				KS_lines.insert(a + 1);
 			}
 			else
 			{
-				KS_in_Graph.insert(a + 1);           //добавляем начальную вершину к общему списку вершин
-				ReNumbered_ks.push_back(a + 1);      //Индекс этого элемента в векторе будет порядковым номером
+				KS_in_Graph.insert(ks[a].id);           //добавляем начальную вершину к общему списку вершин
+				ReNumbered_ks.push_back(ks[a].id);      //Индекс этого элемента в векторе будет порядковым номером
 				new_edge.a = ReNumbered_ks.size() - 1;   
-				KS_lines.insert(a + 1);
 			}
 			//Тоже самое для конечной кс
-			if (KS_in_Graph.find(b+1) != KS_in_Graph.end()) 
+			if (KS_in_Graph.find(ks[b].id) != KS_in_Graph.end()) 
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  
-					if (ReNumbered_ks[i] == b+1)
+					if (ReNumbered_ks[i] == ks[b].id)
 						new_edge.b = i;  
-				KS_columns.insert(b + 1);
 			}
 			else
 			{
-				KS_in_Graph.insert(b + 1);           
-				ReNumbered_ks.push_back(b + 1);      
+				KS_in_Graph.insert(ks[b].id);           
+				ReNumbered_ks.push_back(ks[b].id);
 				new_edge.b = ReNumbered_ks.size() - 1;
-				KS_columns.insert(b + 1);
 			}
 			new_edge.cost = p[pipe].length;
 			All_edges.push_back(new_edge);
@@ -98,22 +94,22 @@ void Graph::CreateGraph()   //Функция создания матрицы смежности
 	}
 }
 
-//bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
-//{
-//	if (parametr == "line")//Чекаем строку
-//	{
-//		for (int j = 0; j < Matrix.size(); j++)
-//			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
-//				return true;
-//	}else
-//	if (parametr == "column")//Чекаем столбец
-//	{
-//		for (int i = 0; i < Matrix.size(); i++)
-//			if (Matrix[i][index] > 0)
-//				return true;
-//	}
-//	return false;//Если проверка ничего не выявила
-//}
+bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
+{
+	if (parametr == "line")//Чекаем строку
+	{
+		for (int j = 0; j < Matrix.size(); j++)
+			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
+				return true;
+	}else
+	if (parametr == "column")//Чекаем столбец
+	{
+		for (int i = 0; i < Matrix.size(); i++)
+			if (Matrix[i][index] > 0)
+				return true;
+	}
+	return false;//Если проверка ничего не выявила
+}
 
 void Graph::PrintGraph()        //Функция вывода графа в консоль
 {
@@ -267,19 +263,19 @@ int Graph::ConvertKS(int ks_id)    //Принимаем id кс
 			return i;                 //Возвращаем порядковый номер кс
 }
 
-int Graph::UserChooseKS_inGraph(set<int>& set_ks)
-{
-	for (int i : set_ks)
-		cout << i << " ";       //Показываем возможные вершины
-	int choosen_ks;      
-	while ((cin >> choosen_ks).fail() || set_ks.find(choosen_ks) == set_ks.end()) //Проверяем ввод на допустимость
-	{
-		cin.clear();
-		cin.ignore(32767, '\n');
-		cout << "Введите корректное число!" << endl;
-	}
-	return ConvertKS(choosen_ks);  //Возвращаем порядковый номер
-}
+//int Graph::UserChooseKS_inGraph(set<int>& set_ks)
+//{
+//	for (int i : set_ks)
+//		cout << i << " ";       //Показываем возможные вершины
+//	int choosen_ks;      
+	//while ((cin >> choosen_ks).fail() || set_ks.find(choosen_ks) == set_ks.end()) //Проверяем ввод на допустимость
+	//{
+	//	cin.clear();
+	//	cin.ignore(32767, '\n');
+	//	cout << "Введите корректное число!" << endl;
+	//}
+//	return ConvertKS(choosen_ks);  //Возвращаем порядковый номер
+//}
 
 ofstream& operator<<(ofstream& outf, const Graph& g)
 {
@@ -289,10 +285,10 @@ ofstream& operator<<(ofstream& outf, const Graph& g)
 		outf << i << endl;
 	for (int i = 0; i < g.ReNumbered_ks.size(); i++)
 		outf << g.ReNumbered_ks[i] << endl;
-	for (int i : g.KS_lines)
+	/*for (int i : g.KS_lines)
 		outf << i << endl;
 	for (int i : g.KS_columns)
-		outf << i << endl;
+		outf << i << endl;*/
 	for (int i = 0; i < g.All_edges.size(); i++)
 	{
 		outf << g.All_edges[i].a << endl;

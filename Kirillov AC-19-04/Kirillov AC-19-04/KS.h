@@ -12,6 +12,7 @@ public:
 	double number_ceh;
 	double number_ceh_inWork;
 	double efficiency;
+	static int MAX_ID;
 	KS();
 	void SetName();
 	void SetNumber_ceh(double new_value);
