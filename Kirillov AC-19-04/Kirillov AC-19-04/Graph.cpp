@@ -107,22 +107,22 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 	}
 }
 
-bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
-{
-	if (parametr == "line")//Чекаем строку
-	{
-		for (int j = 0; j < Matrix.size(); j++)
-			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
-				return true;
-	}else
-	if (parametr == "column")//Чекаем столбец
-	{
-		for (int i = 0; i < Matrix.size(); i++)
-			if (Matrix[i][index] > 0)
-				return true;
-	}
-	return false;//Если проверка ничего не выявила
-}
+//bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
+//{
+//	if (parametr == "line")//Чекаем строку
+//	{
+//		for (int j = 0; j < Matrix.size(); j++)
+//			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
+//				return true;
+//	}else
+//	if (parametr == "column")//Чекаем столбец
+//	{
+//		for (int i = 0; i < Matrix.size(); i++)
+//			if (Matrix[i][index] > 0)
+//				return true;
+//	}
+//	return false;//Если проверка ничего не выявила
+//}
 
 void Graph::PrintGraph()        //Функция вывода графа в консоль
 {
@@ -197,18 +197,33 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	}
 }
 
-void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
+void Graph::MaxFlow(int u, int v)
 {
-	CreateGraph(p, ks);
 	if (EmptyGraph)
 		cout << "Невозможно расчитать максимальный поток, потому что в сети нет объектов!" << endl;
 	else
 	{
-		vector<vector<int>> WeightMatrix = Matrix;//Матрица весов
-		for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
+		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
+		vector<vector<int>> WeightMatrix = matrix;//Матрица весов
+		for (int i = 0; i < matrix.size(); i++)
+			for (int j = 0; j < matrix[i].size(); j++)
+			{
+				matrix[i][j] = 0;                //Зануляем все элементы
+				WeightMatrix[i][j] = 0;
+			}
+		for (auto ed : All_edges)
 		{
-			WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
+			matrix[ConvertKS(ed.a)][ConvertKS(ed.b)] = 1;               //Создали матрицу из порядковых номеров от 0 до n
+			WeightMatrix[ConvertKS(ed.a)][ConvertKS(ed.b)] = ed.cost;   //Заполняем матрицу весов
 		}
+		//Matrix = matrix;
+		bool new_way = true; 
+		int Flow;
+		vector<edge> Copy_edges = All_edges;
+		do
+		{
+
+		} while (new_way);
 	}
 }
 
