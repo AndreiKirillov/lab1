@@ -275,7 +275,7 @@ vector<int> UserChooseKS(const vector<KS>& ks, int MaxPossibleValue)
 	}
 }
 
-void DeletePipes(vector<Pipe>& p)        //Удаление труб
+void DeletePipes(vector<Pipe>& p, Graph& g)        //Удаление труб
 {
 	vector<int> pipe_indexes = FindPipe(p,p.size());
 	for (int i = 0; i < p.size(); i++)
@@ -284,6 +284,15 @@ void DeletePipes(vector<Pipe>& p)        //Удаление труб
 		{
 			if (p[i].id == pipe_indexes[j]+1)
 			{
+				
+				if (g.Pipes_in_Graph.find(pipe_indexes[j] + 1) != g.Pipes_in_Graph.end())
+					g.Pipes_in_Graph.erase(pipe_indexes[j] + 1);
+				int value = 0;
+				for (int k = 0; k < g.All_edges.size(); k++)
+					if (g.All_edges[k].a == pipe_indexes[j] + 1 || g.All_edges[k].b == pipe_indexes[j] + 1)
+						value++;
+				if(value>0 && value<2)
+
 				p.erase(p.begin() + i);
 			}
 		}
@@ -294,7 +303,7 @@ void DeletePipes(vector<Pipe>& p)        //Удаление труб
 	}
 }
 
-void DeleteKS(vector<KS>& ks, vector<Pipe>& p)      //Удаление кс
+void DeleteKS(vector<KS>& ks, vector<Pipe>& p, Graph& g)      //Удаление кс
 {
 	vector<int> ks_indexes = UserChooseKS(ks, ks.size());
 	for (int i = 0; i < ks.size(); i++)
@@ -308,7 +317,17 @@ void DeleteKS(vector<KS>& ks, vector<Pipe>& p)      //Удаление кс
 					{
 						pipe.input = 0;
 						pipe.output = 0;
+						g.Pipes_in_Graph.erase(pipe.id);
 					}
+				if (g.KS_in_Graph.find(ks_indexes[j]) != g.KS_in_Graph.end())
+					g.KS_in_Graph.erase(ks_indexes[j] + 1);
+				if (g.KS_lines.find(ks_indexes[j]) != g.KS_lines.end())
+					g.KS_lines.erase(ks_indexes[j] + 1);
+				if (g.KS_columns.find(ks_indexes[j]) != g.KS_columns.end())
+					g.KS_columns.erase(ks_indexes[j] + 1);
+				for (int i = 0; i < g.ReNumbered_ks.size(); i++)
+					if (g.ReNumbered_ks[i] == ks_indexes[j] + 1)
+						g.ReNumbered_ks.erase(g.ReNumbered_ks.begin() + i);
 				ks.erase(ks.begin() + i);
 			}
 		}
@@ -434,24 +453,25 @@ void Menu()          //Функция вывода меню, выводит список возможных действий по
 		"2-Добавить компрессорную станцию" << endl <<
 		"3-Соединить компрессорные станции" << endl <<
 		"4-Просмотр всех объектов" << endl <<
-		"5-Редактировать трубу" << endl <<
-		"6-Редактировать компрессорную станцию" << endl <<
-		"7-Поиск труб по признаку 'в ремонте'" << endl <<
-		"8-Поиск компрессорных станций" << endl <<
+		//"5-Редактировать трубу" << endl <<
+		//"6-Редактировать компрессорную станцию" << endl <<
+		//"7-Поиск труб по признаку 'в ремонте'" << endl <<
+		//"8-Поиск компрессорных станций" << endl <<
 		"9-Удалить объекты" << endl <<
 		"10-Просмотр газотранспортной сети" << endl <<
 		"11-Топологическая сортировка" << endl <<
-		"12-Найти кратчайший путь"<<endl<<
-		"13-Сохранить в файл" << endl <<
-		"14-Загрузить из файла" << endl <<
-		"15-Открыть меню" << endl <<
+		"12-Найти кратчайший путь" << endl <<
+		"13-Расчёт максимального потока сети" << endl <<
+		"14-Сохранить в файл" << endl <<
+		"15-Загрузить из файла" << endl <<
+		"16-Открыть меню" << endl <<
 		"0-Выход из программы" << endl;
 }
 
 int MakeStep()      // Функция, возвращающая число-действие, которое хочет совершить пользователь
 {
 	cout << "Какое действие вы хотите сделать?" << endl;
-	int a = GetNumber(0, 15);
+	int a = GetNumber(0, 16);
 	return a;
 }
 
@@ -517,11 +537,11 @@ int main()
 			int WhatToDelete = GetNumber(1, 2);
 			if (WhatToDelete == 1)
 			{
-				DeletePipes(pipes);
+				DeletePipes(pipes,GasNetwork);
 			}
 			else
 			{
-				DeleteKS(ks, pipes);
+				DeleteKS(ks, pipes, GasNetwork);
 			}
 		}
 		break;
@@ -548,7 +568,7 @@ int main()
 				int end = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_columns);
 				if (beginning != end)
 				{
-					int Length = GasNetwork.ShortestWay(beginning, end);//GasNetwork.ConvertKS(beginning), GasNetwork.ConvertKS(end));
+					int Length = GasNetwork.ShortestWay(beginning, end);
 					cout << "Кратчайший путь между вершинами равен " << endl;
 					cout << Length << endl;
 				}
@@ -558,12 +578,30 @@ int main()
 		}
 		break;
 		case 13:
+		{
+			GasNetwork.CreateGraph(pipes, ks);
+			if (GasNetwork.EmptyGraph)
+				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
+			else
+			{
+				cout << "Выберите начальную кс, доступны: ";
+				int beginning = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_lines);
+				cout << "Выберите конечную кс, доступны: ";
+				int end = GasNetwork.UserChooseKS_inGraph(GasNetwork.KS_columns);
+				if (beginning != end)
+				{
+					GasNetwork.MaxFlow(beginning, end);
+				}
+			}
+		}
+		break;
+		case 14:
 			SaveData(pipes, ks, GasNetwork);      //Сохранение данных в файл из массивов труб и КС
 			break;
-		case 14:
+		case 15:
 			DownloadSaves(pipes, ks, GasNetwork);    //загрузка данных из файла
 			break;
-		case 15:                          //Показ меню
+		case 16:                          //Показ меню
 			Menu();
 			break;
 		case 0:

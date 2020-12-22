@@ -14,30 +14,34 @@ using namespace std;
 class Graph
 {
 public:
-    ///////Поля класса
-    unordered_set<int> Pipes_in_Graph;         //Рёбра графа
-    unordered_set<int> KS_in_Graph;            //Вершины графа
-    vector<int> ReNumbered_ks;         //храним порядок попадания кс в сеть(от 0)
-    set<int> KS_lines;         //Здесь кс, которые могут быть началом
-    set<int> KS_columns;       //концом
-    vector<vector<int>> Matrix;      //Матрица смежности
-    vector<vector<int>> WeightMatrix;
-    struct edge {        //структура ребер графа, хранит упорядоченный номер input, output и length трубы в графе
+    ///////ГЏГ®Г«Гї ГЄГ«Г Г±Г±Г 
+    unordered_set<int> Pipes_in_Graph;         //ГђВёГЎГ°Г  ГЈГ°Г ГґГ 
+    unordered_set<int> KS_in_Graph;            //Г‚ГҐГ°ГёГЁГ­Г» ГЈГ°Г ГґГ 
+    vector<int> ReNumbered_ks;         //ГµГ°Г Г­ГЁГ¬ ГЇГ®Г°ГїГ¤Г®ГЄ ГЇГ®ГЇГ Г¤Г Г­ГЁГї ГЄГ± Гў Г±ГҐГІГј(Г®ГІ 0)
+    set<int> KS_lines;         //Г‡Г¤ГҐГ±Гј ГЄГ±, ГЄГ®ГІГ®Г°Г»ГҐ Г¬Г®ГЈГіГІ ГЎГ»ГІГј Г­Г Г·Г Г«Г®Г¬
+    set<int> KS_columns;       //ГЄГ®Г­Г¶Г®Г¬
+    vector<vector<int>> Matrix;      //ГЊГ ГІГ°ГЁГ¶Г  Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ
+    //vector<vector<int>> WeightMatrix;
+    struct edge {        //Г±ГІГ°ГіГЄГІГіГ°Г  Г°ГҐГЎГҐГ° ГЈГ°Г ГґГ , ГµГ°Г Г­ГЁГІ ГіГЇГ®Г°ГїГ¤Г®Г·ГҐГ­Г­Г»Г© Г­Г®Г¬ГҐГ° input, output ГЁ length ГІГ°ГіГЎГ» Гў ГЈГ°Г ГґГҐ
         int a,b, cost;
     };
-    vector<edge> All_edges;     //вектор всех рёбер графа
-    bool EmptyGraph;          //true когда пустой граф
-    ///////Методы класса
-    void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks);   //Соединение кс
-    void CreateGraph();    //Создание матрицы смежности
-    //bool CheckLine(int index, string parametr);                    //Вспомогательная функция
-    void PrintGraph();     //Вывод списков смежности в консоль
-    bool CheckCycle();      //Проверка на циклы
-    void TopologicalSort(); //Топологическая сортировка
-    void MaxFlow();   //Функция расчёта максимального потока сети
+    vector<edge> All_edges;     //ГўГҐГЄГІГ®Г° ГўГ±ГҐГµ Г°ВёГЎГҐГ° ГЈГ°Г ГґГ 
+    bool EmptyGraph;          //true ГЄГ®ГЈГ¤Г  ГЇГіГ±ГІГ®Г© ГЈГ°Г Гґ
+    ///////ГЊГҐГІГ®Г¤Г» ГЄГ«Г Г±Г±Г 
+    void ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks);   //Г‘Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГҐ ГЄГ±
+
+    void CreateGraph();    //Г‘Г®Г§Г¤Г Г­ГЁГҐ Г¬Г ГІГ°ГЁГ¶Г» Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ
+
+    //bool CheckLine(int index, string parametr);                    //Г‚Г±ГЇГ®Г¬Г®ГЈГ ГІГҐГ«ГјГ­Г Гї ГґГіГ­ГЄГ¶ГЁГї
+    void PrintGraph();     //Г‚Г»ГўГ®Г¤ Г±ГЇГЁГ±ГЄГ®Гў Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ Гў ГЄГ®Г­Г±Г®Г«Гј
+    bool CheckCycle();      //ГЏГ°Г®ГўГҐГ°ГЄГ  Г­Г  Г¶ГЁГЄГ«Г»
+    void TopologicalSort(); //Г’Г®ГЇГ®Г«Г®ГЈГЁГ·ГҐГ±ГЄГ Гї Г±Г®Г°ГІГЁГ°Г®ГўГЄГ 
+
+    void MaxFlow();   //Г”ГіГ­ГЄГ¶ГЁГї Г°Г Г±Г·ВёГІГ  Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г®ГЈГ® ГЇГ®ГІГ®ГЄГ  Г±ГҐГІГЁ
+
     int ShortestWay(int v, int end);
-    int ConvertKS(int ks_id); //Вспомогательная функция, конвертирует id кс в её порядковый номер
-    int UserChooseKS_inGraph(set<int>& set_ks);  //Взаимодействие с пользователем; он выбирает начальную и конечную вершины
+    int ConvertKS(int ks_id); //Г‚Г±ГЇГ®Г¬Г®ГЈГ ГІГҐГ«ГјГ­Г Гї ГґГіГ­ГЄГ¶ГЁГї, ГЄГ®Г­ГўГҐГ°ГІГЁГ°ГіГҐГІ id ГЄГ± Гў ГҐВё ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ°
+    int UserChooseKS_inGraph(set<int>& set_ks);  //Г‚Г§Г ГЁГ¬Г®Г¤ГҐГ©Г±ГІГўГЁГҐ Г± ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«ГҐГ¬; Г®Г­ ГўГ»ГЎГЁГ°Г ГҐГІ Г­Г Г·Г Г«ГјГ­ГіГѕ ГЁ ГЄГ®Г­ГҐГ·Г­ГіГѕ ГўГҐГ°ГёГЁГ­Г»
     friend ofstream& operator <<(ofstream& outf, const Graph& g);
 };
 
