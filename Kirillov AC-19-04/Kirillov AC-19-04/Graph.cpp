@@ -6,50 +6,50 @@
 #include<set>
 #include<queue>
 
-void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             //Функция добавления связи между кс
+void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             //Г”ГіГ­ГЄГ¶ГЁГї Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГї Г±ГўГїГ§ГЁ Г¬ГҐГ¦Г¤Гі ГЄГ±
 {
-	if (p.size() == 0 || ks.size() < 2 || (p.size() == 0 && ks.size() < 2))    //Проверяем достаточно ли объектов
+	if (p.size() == 0 || ks.size() < 2 || (p.size() == 0 && ks.size() < 2))    //ГЏГ°Г®ГўГҐГ°ГїГҐГ¬ Г¤Г®Г±ГІГ ГІГ®Г·Г­Г® Г«ГЁ Г®ГЎГєГҐГЄГІГ®Гў
 	{
-		cout << "Невозможно соединить КС, так как недостаточно объектов" << endl;
+		cout << "ГЌГҐГўГ®Г§Г¬Г®Г¦Г­Г® Г±Г®ГҐГ¤ГЁГ­ГЁГІГј ГЉГ‘, ГІГ ГЄ ГЄГ ГЄ Г­ГҐГ¤Г®Г±ГІГ ГІГ®Г·Г­Г® Г®ГЎГєГҐГЄГІГ®Гў" << endl;
 	}
 	else
 	{
 		bool PotentialError = false;
-		cout << "Выберите начальную компрессорную станцию:" << endl;            // Пользователь выбирает нужные объекты
+		cout << "Г‚Г»ГЎГҐГ°ГЁГІГҐ Г­Г Г·Г Г«ГјГ­ГіГѕ ГЄГ®Г¬ГЇГ°ГҐГ±Г±Г®Г°Г­ГіГѕ Г±ГІГ Г­Г¶ГЁГѕ:" << endl;            // ГЏГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гј ГўГ»ГЎГЁГ°Г ГҐГІ Г­ГіГ¦Г­Г»ГҐ Г®ГЎГєГҐГЄГІГ»
 		vector<int> begin = UserChooseKS(ks, 1);
 		int a = begin[0];
-		cout << "Выберите конечную компрессорную станцию:" << endl;            //////Сделать потом чтоб не заставлять выбирать если ошибка
+		cout << "Г‚Г»ГЎГҐГ°ГЁГІГҐ ГЄГ®Г­ГҐГ·Г­ГіГѕ ГЄГ®Г¬ГЇГ°ГҐГ±Г±Г®Г°Г­ГіГѕ Г±ГІГ Г­Г¶ГЁГѕ:" << endl;            //////Г‘Г¤ГҐГ«Г ГІГј ГЇГ®ГІГ®Г¬ Г·ГІГ®ГЎ Г­ГҐ Г§Г Г±ГІГ ГўГ«ГїГІГј ГўГ»ГЎГЁГ°Г ГІГј ГҐГ±Г«ГЁ Г®ГёГЁГЎГЄГ 
 		vector<int> end = UserChooseKS(ks, 1);
-		int b = end[0];                                                             // а, b, pipe - индекс
-		cout << "Выберите трубу для соединения компрессорных станций:" << endl;
+		int b = end[0];                                                             // Г , b, pipe - ГЁГ­Г¤ГҐГЄГ±
+		cout << "Г‚Г»ГЎГҐГ°ГЁГІГҐ ГІГ°ГіГЎГі Г¤Г«Гї Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГї ГЄГ®Г¬ГЇГ°ГҐГ±Г±Г®Г°Г­Г»Гµ Г±ГІГ Г­Г¶ГЁГ©:" << endl;
 		vector<int> v = FindPipe(p, 1);
 		int pipe = v[0];   
 		if (p[pipe].remont == true || Pipes_in_Graph.find(pipe + 1) != Pipes_in_Graph.end())
 		{
-			PotentialError = true;            //Труба не должна быть в ремонте или уже быть использованной в сети
-			cout << "Нельзя использовать данную трубу!" << endl;
+			PotentialError = true;            //Г’Г°ГіГЎГ  Г­ГҐ Г¤Г®Г«Г¦Г­Г  ГЎГ»ГІГј Гў Г°ГҐГ¬Г®Г­ГІГҐ ГЁГ«ГЁ ГіГ¦ГҐ ГЎГ»ГІГј ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г®Г© Гў Г±ГҐГІГЁ
+			cout << "ГЌГҐГ«ГјГ§Гї ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ ГІГј Г¤Г Г­Г­ГіГѕ ГІГ°ГіГЎГі!" << endl;
 		}
-		if (a >= 0 && b >= 0 && a != b && pipe >= 0 && !PotentialError)       //Если всё нормально
+		if (a >= 0 && b >= 0 && a != b && pipe >= 0 && !PotentialError)       //Г…Г±Г«ГЁ ГўГ±Вё Г­Г®Г°Г¬Г Г«ГјГ­Г®
 		{
 			edge new_edge;
-			p[pipe].input = a + 1;       //Храним id
+			p[pipe].input = a + 1;       //Г•Г°Г Г­ГЁГ¬ id
 			p[pipe].output = b + 1;
 			Pipes_in_Graph.insert(pipe + 1); 
-			if (KS_in_Graph.find(a+1) != KS_in_Graph.end()) //Если данная кс уже есть в сети
+			if (KS_in_Graph.find(a+1) != KS_in_Graph.end()) //Г…Г±Г«ГЁ Г¤Г Г­Г­Г Гї ГЄГ± ГіГ¦ГҐ ГҐГ±ГІГј Гў Г±ГҐГІГЁ
 			{
-				for (int i = 0; i < ReNumbered_ks.size(); i++)  //Ищем когда добавилась эта кс
+				for (int i = 0; i < ReNumbered_ks.size(); i++)  //Г€Г№ГҐГ¬ ГЄГ®ГЈГ¤Г  Г¤Г®ГЎГ ГўГЁГ«Г Г±Гј ГЅГІГ  ГЄГ±
 					if (ReNumbered_ks[i] == a+1)
-						new_edge.a = i;      //находим номер нужной нам кс//индекс и есть порядковый номер
+						new_edge.a = i;      //Г­Г ГµГ®Г¤ГЁГ¬ Г­Г®Г¬ГҐГ° Г­ГіГ¦Г­Г®Г© Г­Г Г¬ ГЄГ±//ГЁГ­Г¤ГҐГЄГ± ГЁ ГҐГ±ГІГј ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ°
 				KS_lines.insert(a + 1);
 			}
 			else
 			{
-				KS_in_Graph.insert(a + 1);           //добавляем начальную вершину к общему списку вершин
-				ReNumbered_ks.push_back(a + 1);      //Индекс этого элемента в векторе будет порядковым номером
+				KS_in_Graph.insert(a + 1);           //Г¤Г®ГЎГ ГўГ«ГїГҐГ¬ Г­Г Г·Г Г«ГјГ­ГіГѕ ГўГҐГ°ГёГЁГ­Гі ГЄ Г®ГЎГ№ГҐГ¬Гі Г±ГЇГЁГ±ГЄГі ГўГҐГ°ГёГЁГ­
+				ReNumbered_ks.push_back(a + 1);      //Г€Г­Г¤ГҐГЄГ± ГЅГІГ®ГЈГ® ГЅГ«ГҐГ¬ГҐГ­ГІГ  Гў ГўГҐГЄГІГ®Г°ГҐ ГЎГіГ¤ГҐГІ ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г¬ Г­Г®Г¬ГҐГ°Г®Г¬
 				new_edge.a = ReNumbered_ks.size() - 1;   
 				KS_lines.insert(a + 1);
 			}
-			//Тоже самое для конечной кс
+			//Г’Г®Г¦ГҐ Г±Г Г¬Г®ГҐ Г¤Г«Гї ГЄГ®Г­ГҐГ·Г­Г®Г© ГЄГ±
 			if (KS_in_Graph.find(b+1) != KS_in_Graph.end()) 
 			{
 				for (int i = 0; i < ReNumbered_ks.size(); i++)  
@@ -69,80 +69,78 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 		}
 		else
 		{
-			cout << "Ошибка! Попробуйте заново!" << endl;
+			cout << "ГЋГёГЁГЎГЄГ ! ГЏГ®ГЇГ°Г®ГЎГіГ©ГІГҐ Г§Г Г­Г®ГўГ®!" << endl;
 			if (a == b)
-				cout << "Необходимо указывать разные компрессорные станции!" << endl;
+				cout << "ГЌГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® ГіГЄГ Г§Г»ГўГ ГІГј Г°Г Г§Г­Г»ГҐ ГЄГ®Г¬ГЇГ°ГҐГ±Г±Г®Г°Г­Г»ГҐ Г±ГІГ Г­Г¶ГЁГЁ!" << endl;
 		}
 	}
 }
 
-void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция создания матрицы смежности
-{//Переделывать
+void Graph::CreateGraph()   //Г”ГіГ­ГЄГ¶ГЁГї Г±Г®Г§Г¤Г Г­ГЁГї Г¬Г ГІГ°ГЁГ¶Г» Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ
+{//ГЏГҐГ°ГҐГ¤ГҐГ«Г»ГўГ ГІГј
 	if (Pipes_in_Graph.size() == 0)
-		EmptyGraph = true;//Информация, что граф пустой
+		EmptyGraph = true;//Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї, Г·ГІГ® ГЈГ°Г Гґ ГЇГіГ±ГІГ®Г©
 	else
 	{
-		//vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
-		//for (int i = 0; i < matrix.size(); i++)
-		//	for (int j = 0; j < matrix[i].size(); j++)
-		//		matrix[i][j] = 0;                //Зануляем все элементы
-		//for (auto ed : All_edges)
-		//	matrix[ed.a][ConvertKS(ed.b)] = 1;
-		//Matrix = matrix;
-		vector<vector<int>> matrix(ks.size(), vector<int>(ks.size()));      //Создаем матрицу исходя из кол-ва кс в базе
+		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Г‘Г®Г§Г¤Г ГҐГ¬ Г¬Г ГІГ°ГЁГ¶Гі ГЁГ±ГµГ®Г¤Гї ГЁГ§ ГЄГ®Г«-ГўГ  ГЄГ± Гў ГЎГ Г§ГҐ
+		for (int i = 0; i < matrix.size(); i++)
+			for (int j = 0; j < matrix[i].size(); j++)
+				matrix[i][j] = 0;                //Г‡Г Г­ГіГ«ГїГҐГ¬ ГўГ±ГҐ ГЅГ«ГҐГ¬ГҐГ­ГІГ»
+		for (auto ed : All_edges)
+			matrix[ed.a][ed.b] = 1;
+		Matrix = matrix;
+		//vector<vector<int>> matrix(ks.size(), vector<int>(ks.size()));      //Г‘Г®Г§Г¤Г ГҐГ¬ Г¬Г ГІГ°ГЁГ¶Гі ГЁГ±ГµГ®Г¤Гї ГЁГ§ ГЄГ®Г«-ГўГ  ГЄГ± Гў ГЎГ Г§ГҐ
 
-		for (int i = 0; i < ks.size(); i++)
-			for (int j = 0; j < ks.size(); j++)
-				matrix[i][j] = 0;                         //Зануляем все элементы
-		for (auto& pipe_id : Pipes_in_Graph)         //Проходимся по трубам, задействованным в графе
-		{
-			matrix[p[pipe_id - 1].input - 1][p[pipe_id - 1].output - 1] = 1;      //Добавляем связь
-		}
-		Matrix = matrix;         //Присваиваем готовую матрицу полю класса
-		//WeightMatrix = Matrix;
-		//for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
+		//for (int i = 0; i < ks.size(); i++)
+		//	for (int j = 0; j < ks.size(); j++)
+		//		matrix[i][j] = 0;                         //Г‡Г Г­ГіГ«ГїГҐГ¬ ГўГ±ГҐ ГЅГ«ГҐГ¬ГҐГ­ГІГ»
+		//for (auto& pipe_id : Pipes_in_Graph)         //ГЏГ°Г®ГµГ®Г¤ГЁГ¬Г±Гї ГЇГ® ГІГ°ГіГЎГ Г¬, Г§Г Г¤ГҐГ©Г±ГІГўГ®ГўГ Г­Г­Г»Г¬ Гў ГЈГ°Г ГґГҐ
 		//{
-		//	WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
+		//	matrix[p[pipe_id - 1].input - 1][p[pipe_id - 1].output - 1] = 1;      //Г„Г®ГЎГ ГўГ«ГїГҐГ¬ Г±ГўГїГ§Гј
+		//}
+		//Matrix = matrix;         //ГЏГ°ГЁГ±ГўГ ГЁГўГ ГҐГ¬ ГЈГ®ГІГ®ГўГіГѕ Г¬Г ГІГ°ГЁГ¶Гі ГЇГ®Г«Гѕ ГЄГ«Г Г±Г±Г 
+		//WeightMatrix = Matrix;
+		//for (int pipe : Pipes_in_Graph)    //Г§Г ГЇГ®Г«Г­ГїГҐГ¬ Г¬Г ГІГ°ГЁГ¶Гі ГўГҐГ±Г®Гў
+		//{
+		//	WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //Г‚ ГЄГ Г·ГҐГ±ГІГўГҐ ГўГҐГ±Г  Г¤Г«ГЁГ­Г  ГІГ°ГіГЎГ»
 		//}
 	}
 }
 
-//bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
+//bool Graph::CheckLine(int index, string parametr)//Г‚Г±ГЇГ®Г¬Г®ГЈГ ГІГҐГ«ГјГ­Г Гї ГґГіГ­ГЄГ¶ГЁГї ГЇГ°Г®ГўГҐГ°ГЄГЁ Г±ГІГ°Г®ГЄГЁ/Г±ГІГ®Г«ГЎГ¶Г  Г­Г  Г­ГіГ«ГЁ 
 //{
-//	if (parametr == "line")//Чекаем строку
+//	if (parametr == "line")//Г—ГҐГЄГ ГҐГ¬ Г±ГІГ°Г®ГЄГі
 //	{
 //		for (int j = 0; j < Matrix.size(); j++)
-//			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
+//			if (Matrix[index][j] > 0) //ГҐГ±Г«ГЁ ГҐГ±ГІГј ГЅГ«ГҐГ¬ГҐГ­ГІ Г®ГІГ«ГЁГ·Г­Г»Г© Г®ГІ Г­ГіГ«Гї ГўГ®Г§ГўГ°Г Г№Г ГҐГ¬ true
 //				return true;
 //	}else
-//	if (parametr == "column")//Чекаем столбец
+//	if (parametr == "column")//Г—ГҐГЄГ ГҐГ¬ Г±ГІГ®Г«ГЎГҐГ¶
 //	{
 //		for (int i = 0; i < Matrix.size(); i++)
 //			if (Matrix[i][index] > 0)
 //				return true;
 //	}
-//	return false;//Если проверка ничего не выявила
+//	return false;//Г…Г±Г«ГЁ ГЇГ°Г®ГўГҐГ°ГЄГ  Г­ГЁГ·ГҐГЈГ® Г­ГҐ ГўГ»ГїГўГЁГ«Г 
 //}
 
-void Graph::PrintGraph()        //Функция вывода графа в консоль
+void Graph::PrintGraph()        //Г”ГіГ­ГЄГ¶ГЁГї ГўГ»ГўГ®Г¤Г  ГЈГ°Г ГґГ  Гў ГЄГ®Г­Г±Г®Г«Гј
 {
-	//Выводим список смежности
-	bool Matrix_is_empty = false;
-	if (Pipes_in_Graph.size() == 0) 
-		Matrix_is_empty = true;
-	if (!Matrix_is_empty)        //Выводим граф только, если матрица не пустая
+	CreateGraph();
+	//Г‚Г»ГўГ®Г¤ГЁГ¬ Г±ГЇГЁГ±Г®ГЄ Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ
+	if (!EmptyGraph)        //Г‚Г»ГўГ®Г¤ГЁГ¬ ГЈГ°Г Гґ ГІГ®Г«ГјГЄГ®, ГҐГ±Г«ГЁ Г¬Г ГІГ°ГЁГ¶Г  Г­ГҐ ГЇГіГ±ГІГ Гї
 	{
-		cout << "\tГазотранспортная сеть\t\n\n" <<
-			"Компрессорная станция <---> смежные с ней станции" << endl << endl;
+		cout << "\tГѓГ Г§Г®ГІГ°Г Г­Г±ГЇГ®Г°ГІГ­Г Гї Г±ГҐГІГј\t\n\n" <<
+			"ГЉГ®Г¬ГЇГ°ГҐГ±Г±Г®Г°Г­Г Гї Г±ГІГ Г­Г¶ГЁГї <---> Г±Г¬ГҐГ¦Г­Г»ГҐ Г± Г­ГҐГ© Г±ГІГ Г­Г¶ГЁГЁ" << endl << endl;
 		for (int i = 0; i < Matrix.size(); i++)
 		{
-			bool endline = false;                      //Переменная чтобы знать, нужно ли переводить строку
+			bool endline = false;                      //ГЏГҐГ°ГҐГ¬ГҐГ­Г­Г Гї Г·ГІГ®ГЎГ» Г§Г­Г ГІГј, Г­ГіГ¦Г­Г® Г«ГЁ ГЇГҐГ°ГҐГўГ®Г¤ГЁГІГј Г±ГІГ°Г®ГЄГі
 			for (int j = 0; j < Matrix[i].size(); j++)
 				if (Matrix[i][j] == 1)
 				{
 					if (endline == false)
 					{
-						cout << i+1 << "\t-\t" << j+1;       //Выводим id
+						cout << ReNumbered_ks[i] << "\t-\t" << ReNumbered_ks[j];       //Г‚Г»ГўГ®Г¤ГЁГ¬ id
 						endline = true;
 					}
 					else
@@ -154,67 +152,72 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 		cout << endl;
 	}
 	else
-		cout << "Газотранспортной сети не существует, так как нет связей между компрессорными станциями" << endl;
+		cout << "ГѓГ Г§Г®ГІГ°Г Г­Г±ГЇГ®Г°ГІГ­Г®Г© Г±ГҐГІГЁ Г­ГҐ Г±ГіГ№ГҐГ±ГІГўГіГҐГІ, ГІГ ГЄ ГЄГ ГЄ Г­ГҐГІ Г±ГўГїГ§ГҐГ© Г¬ГҐГ¦Г¤Гі ГЄГ®Г¬ГЇГ°ГҐГ±Г±Г®Г°Г­Г»Г¬ГЁ Г±ГІГ Г­Г¶ГЁГїГ¬ГЁ" << endl;
 }
 
-void Graph::TopologicalSort()       //Функция топологической сортировки
+void Graph::TopologicalSort()       //Г”ГіГ­ГЄГ¶ГЁГї ГІГ®ГЇГ®Г«Г®ГЈГЁГ·ГҐГ±ГЄГ®Г© Г±Г®Г°ГІГЁГ°Г®ГўГЄГЁ
 {
-	map<int, int> SortedKS;     //ключ - номер вершины, значение - id КС
-	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
-	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
-	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
-	do//Пока есть неиспользованные вершины
+	CreateGraph();
+	map<int, int> SortedKS;     //ГЄГ«ГѕГ· - Г­Г®Г¬ГҐГ° ГўГҐГ°ГёГЁГ­Г», Г§Г­Г Г·ГҐГ­ГЁГҐ - id ГЉГ‘
+	int NumberOfKS = KS_in_Graph.size();           //ГЌГҐГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
+	vector<vector<int>> Matrix_Copy = Matrix;      //ГЉГ®ГЇГЁГї Г¬Г ГІГ°ГЁГ¶Г» Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ, Г·ГІГ®ГЎГ» Г§Г Г­ГіГ«ГїГІГј Г±ГІГ°Г®ГЄГЁ
+	unordered_set<int> CopyKS = KS_in_Graph;               //ГЉГ®ГЇГЁГї ГўГҐГ°ГёГЁГ­ ГЈГ°Г ГґГ , Г·ГІГ®ГЎГ» ГіГ¤Г Г«ГїГІГј ГЁГµ
+	do//ГЏГ®ГЄГ  ГҐГ±ГІГј Г­ГҐГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
 	{
-		skip:                     //Лейбл для goto
-		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
+	skip:                     //Г‹ГҐГ©ГЎГ« Г¤Г«Гї goto
+		for (int ks : CopyKS)      //ГЏГҐГ°ГҐГЎГЁГ°Г ГҐГ¬ Г­ГҐГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
 		{
-			bool VoidLine = true;         //Если строка только с 0
-			bool DeletedElement = false;  //Если удалили вершину
-			for (int j = 0; j < Matrix_Copy[ks-1].size(); j++)   //Проверяем строку на занулённость
+			ks = ConvertKS(ks);
+			bool VoidLine = true;         //Г…Г±Г«ГЁ Г±ГІГ°Г®ГЄГ  ГІГ®Г«ГјГЄГ® Г± 0
+			bool DeletedElement = false;  //Г…Г±Г«ГЁ ГіГ¤Г Г«ГЁГ«ГЁ ГўГҐГ°ГёГЁГ­Гі
+			for (int j = 0; j < Matrix_Copy[ks].size(); j++)   //ГЏГ°Г®ГўГҐГ°ГїГҐГ¬ Г±ГІГ°Г®ГЄГі Г­Г  Г§Г Г­ГіГ«ВёГ­Г­Г®Г±ГІГј
 			{
-				if (Matrix_Copy[ks-1][j] == 1)         
+				if (Matrix_Copy[ks][j] == 1)
 					VoidLine = false;
 			}
-			if (VoidLine == true)    //Если строка из нулей
+			if (VoidLine == true)    //Г…Г±Г«ГЁ Г±ГІГ°Г®ГЄГ  ГЁГ§ Г­ГіГ«ГҐГ©
 			{
-				SortedKS.emplace(NumberOfKS, ks); //Добавляем вершину в список отсортированных
-				NumberOfKS--;                     //Уменьшаем
+				SortedKS.emplace(NumberOfKS, ReNumbered_ks[ks]); //Г„Г®ГЎГ ГўГ«ГїГҐГ¬ ГўГҐГ°ГёГЁГ­Гі Гў Г±ГЇГЁГ±Г®ГЄ Г®ГІГ±Г®Г°ГІГЁГ°Г®ГўГ Г­Г­Г»Гµ
+				NumberOfKS--;                     //Г“Г¬ГҐГ­ГјГёГ ГҐГ¬
 				for (int i = 0; i < Matrix_Copy.size(); i++)
-					Matrix_Copy[i][ks - 1] = 0;               //Зануляем элементы использованной вершины
-				CopyKS.erase(ks);                 //Помечаем вершину как использованную
-				DeletedElement = true;  
+					Matrix_Copy[i][ks] = 0;               //Г‡Г Г­ГіГ«ГїГҐГ¬ ГЅГ«ГҐГ¬ГҐГ­ГІГ» ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г®Г© ГўГҐГ°ГёГЁГ­Г»
+				CopyKS.erase(ReNumbered_ks[ks]);                 //ГЏГ®Г¬ГҐГ·Г ГҐГ¬ ГўГҐГ°ГёГЁГ­Гі ГЄГ ГЄ ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­ГіГѕ
+				DeletedElement = true;
 			}
-			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
-				goto skip;         
+			if (DeletedElement)       //Г…Г±Г«ГЁ ГіГ¤Г Г«ГЁГ«ГЁ ГўГҐГ°ГёГЁГ­Гі, Г­Г Г·ГЁГ­Г ГҐГ¬ Г¶ГЁГЄГ« Г§Г Г­Г®ГўГ®
+				goto skip;
 		}
-	} while (NumberOfKS > 0);     
-	////Выводим результат
-	cout << "\tТопографическая сортировка\t\n\n";
-	cout << "№ КС - id КС" << endl << endl;
+	} while (NumberOfKS > 0);
+	////Г‚Г»ГўГ®Г¤ГЁГ¬ Г°ГҐГ§ГіГ«ГјГІГ ГІ
+	cout << "\tГ’Г®ГЇГ®ГЈГ°Г ГґГЁГ·ГҐГ±ГЄГ Гї Г±Г®Г°ГІГЁГ°Г®ГўГЄГ \t\n\n";
+	cout << "В№ ГЉГ‘ - id ГЉГ‘" << endl << endl;
 	for(auto& n :SortedKS)
 	{
 		cout << n.first << "\t" << n.second << endl;
 	}
 }
 
-void Graph::MaxFlow(int u, int v)
+
+void Graph::MaxFlow()
 {
+	CreateGraph();
+
 	if (EmptyGraph)
-		cout << "Невозможно расчитать максимальный поток, потому что в сети нет объектов!" << endl;
+		cout << "ГЌГҐГўГ®Г§Г¬Г®Г¦Г­Г® Г°Г Г±Г·ГЁГІГ ГІГј Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г»Г© ГЇГ®ГІГ®ГЄ, ГЇГ®ГІГ®Г¬Гі Г·ГІГ® Гў Г±ГҐГІГЁ Г­ГҐГІ Г®ГЎГєГҐГЄГІГ®Гў!" << endl;
 	else
 	{
-		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
-		vector<vector<int>> WeightMatrix = matrix;//Матрица весов
+		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Г‘Г®Г§Г¤Г ГҐГ¬ Г¬Г ГІГ°ГЁГ¶Гі ГЁГ±ГµГ®Г¤Гї ГЁГ§ ГЄГ®Г«-ГўГ  ГЄГ± Гў ГЎГ Г§ГҐ
+		vector<vector<int>> WeightMatrix = matrix;//ГЊГ ГІГ°ГЁГ¶Г  ГўГҐГ±Г®Гў
 		for (int i = 0; i < matrix.size(); i++)
 			for (int j = 0; j < matrix[i].size(); j++)
 			{
-				matrix[i][j] = 0;                //Зануляем все элементы
+				matrix[i][j] = 0;                //Г‡Г Г­ГіГ«ГїГҐГ¬ ГўГ±ГҐ ГЅГ«ГҐГ¬ГҐГ­ГІГ»
 				WeightMatrix[i][j] = 0;
 			}
 		for (auto ed : All_edges)
 		{
-			matrix[ConvertKS(ed.a)][ConvertKS(ed.b)] = 1;               //Создали матрицу из порядковых номеров от 0 до n
-			WeightMatrix[ConvertKS(ed.a)][ConvertKS(ed.b)] = ed.cost;   //Заполняем матрицу весов
+
+			//WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //Г‚ ГЄГ Г·ГҐГ±ГІГўГҐ ГўГҐГ±Г  Г¤Г«ГЁГ­Г  ГІГ°ГіГЎГ»
 		}
 		//Matrix = matrix;
 		bool new_way = true; 
@@ -227,12 +230,12 @@ void Graph::MaxFlow(int u, int v)
 	}
 }
 
-int Graph::ShortestWay(int v, int end)//v и end - порядковые номера начальной вершины и конечной
+int Graph::ShortestWay(int v, int end)//v ГЁ end - ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»ГҐ Г­Г®Г¬ГҐГ°Г  Г­Г Г·Г Г«ГјГ­Г®Г© ГўГҐГ°ГёГЁГ­Г» ГЁ ГЄГ®Г­ГҐГ·Г­Г®Г©
 {
-	const int inf = 100000000;   //Бесконечность
+	const int inf = 100000000;   //ГЃГҐГ±ГЄГ®Г­ГҐГ·Г­Г®Г±ГІГј
 	int NumberOfKS = KS_in_Graph.size();
 	int NumberOfPipes = Pipes_in_Graph.size();
-	vector<int> Distance(NumberOfKS, inf);      //храним расстояния до вершин
+	vector<int> Distance(NumberOfKS, inf);      //ГµГ°Г Г­ГЁГ¬ Г°Г Г±Г±ГІГ®ГїГ­ГЁГї Г¤Г® ГўГҐГ°ГёГЁГ­
 		Distance[v] = 0;
 		for (int i = 0; i < NumberOfKS - 1; ++i)
 			for (int j = 0; j < NumberOfPipes; ++j)
@@ -241,94 +244,87 @@ int Graph::ShortestWay(int v, int end)//v и end - порядковые номера начальной ве
 		return Distance[end];
 }
 
-int Graph::ConvertKS(int ks_id)    //Принимаем id кс
+int Graph::ConvertKS(int ks_id)    //ГЏГ°ГЁГ­ГЁГ¬Г ГҐГ¬ id ГЄГ±
 {
 	for (int i = 0; i < ReNumbered_ks.size(); i++)  
 		if (ReNumbered_ks[i] == ks_id)  
-			return i;                 //Возвращаем порядковый номер кс
+			return i;                 //Г‚Г®Г§ГўГ°Г Г№Г ГҐГ¬ ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ° ГЄГ±
 }
 
 int Graph::UserChooseKS_inGraph(set<int>& set_ks)
 {
 	for (int i : set_ks)
-		cout << i << " ";       //Показываем возможные вершины
+		cout << i << " ";       //ГЏГ®ГЄГ Г§Г»ГўГ ГҐГ¬ ГўГ®Г§Г¬Г®Г¦Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
 	int choosen_ks;      
-	while ((cin >> choosen_ks).fail() || set_ks.find(choosen_ks) == set_ks.end()) //Проверяем ввод на допустимость
+	while ((cin >> choosen_ks).fail() || set_ks.find(choosen_ks) == set_ks.end()) //ГЏГ°Г®ГўГҐГ°ГїГҐГ¬ ГўГўГ®Г¤ Г­Г  Г¤Г®ГЇГіГ±ГІГЁГ¬Г®Г±ГІГј
 	{
 		cin.clear();
 		cin.ignore(32767, '\n');
-		cout << "Введите корректное число!" << endl;
+		cout << "Г‚ГўГҐГ¤ГЁГІГҐ ГЄГ®Г°Г°ГҐГЄГІГ­Г®ГҐ Г·ГЁГ±Г«Г®!" << endl;
 	}
-	return ConvertKS(choosen_ks);  //Возвращаем порядковый номер
+	return ConvertKS(choosen_ks);  //Г‚Г®Г§ГўГ°Г Г№Г ГҐГ¬ ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ°
 }
 
 bool Graph::CheckCycle()
 {
-	//bool WhitePeak = true;
-	//vector<int> copy_of_ks;
-	//for (auto& ks : KS_in_Graph)
-	//{
-	//	copy_of_ks.push_back(ks);
-	//}
-	////while (WhitePeak)
-	////{
-	//	for (int grey_ks : KS_in_Graph)
-	//	{
-	//		vector<int> GreyPeak;
-	//		GreyPeak.push_back(grey_ks - 1);//делаем первую вершину серой
-	//		int i=0;
-	//		bool possibility = true;
-	//		bool grey_peak_found = false;
-	//		do
-	//		{
-
-	//			if (Matrix[grey_ks - 1][i] == 1)
-	//			{
-	//				for (auto& it : GreyPeak)
-	//					if (i == it)
-	//						grey_peak_found = true;
-	//				grey_ks = i + 1;
-	//			}
-	//			i++;
-	//		} while (i < Matrix.size() && possibility ==true);
-	//		//for (int i = 0; i < Matrix.size(); i++)  //проходим по строке с серой вершиной
-	//		//{
-	//		//	if(Matrix[ks-1][i]!=1 &&)
-	//		//	Matrix[ks - 1][i]
-	//		//}
-	//	}
-	////}
+	for (int beginning = 0; beginning < Matrix.size(); beginning++)
+	{
+		bool no_way = false;
+		vector<int> visited_ks(Matrix.size(), 0);
+		visited_ks[beginning] = 1; 
+		for (int j = 0; j < Matrix[beginning].size(); j++)
+			if (Matrix[beginning][j] != 0) {
+				if (visited_ks[j] == 0) {
+					//if (cycle_exists(j, g, visit)) return true;
+				}
+				else if (visited_ks[j] == 1)
+					return true;
+			}
+	}
+	return false;
 	
-	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
-	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
-	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
+	int NumberOfKS = KS_in_Graph.size();           //ГЌГҐГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
+	vector<vector<int>> Matrix_Copy = Matrix;      //ГЉГ®ГЇГЁГї Г¬Г ГІГ°ГЁГ¶Г» Г±Г¬ГҐГ¦Г­Г®Г±ГІГЁ, Г·ГІГ®ГЎГ» Г§Г Г­ГіГ«ГїГІГј Г±ГІГ°Г®ГЄГЁ
+	unordered_set<int> CopyKS = KS_in_Graph;               //ГЉГ®ГЇГЁГї ГўГҐГ°ГёГЁГ­ ГЈГ°Г ГґГ , Г·ГІГ®ГЎГ» ГіГ¤Г Г«ГїГІГј ГЁГµ
 	set<int> GreyKS;
 	int index_i, index_j;
-	do//Пока есть неиспользованные вершины
+	do//ГЏГ®ГЄГ  ГҐГ±ГІГј Г­ГҐГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
 	{
-	skip:                     //Лейбл для goto
-		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
+		for (int ks : CopyKS)      //ГЏГҐГ°ГҐГЎГЁГ°Г ГҐГ¬ Г­ГҐГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г»ГҐ ГўГҐГ°ГёГЁГ­Г»
 		{
-			GreyKS = { -1 };
-			GreyKS.insert(ks - 1);//Помечаем начальную вершину
-			bool VoidLine = true;         //Если строка только с 0
-			bool DeletedElement = false;  //Если удалили вершину
-			for (int j = 0; j < Matrix_Copy[ks - 1].size(); j++)   //Проверяем строку на занулённость
+			vector<int> visited_ks(Matrix.size(), 0);
+			ks = ConvertKS(ks);
+			visited_ks[ks] = 1;
+			bool VoidLine = true;         //Г…Г±Г«ГЁ Г±ГІГ°Г®ГЄГ  ГІГ®Г«ГјГЄГ® Г± 0
+			bool DeletedElement = false;  //Г…Г±Г«ГЁ ГіГ¤Г Г«ГЁГ«ГЁ ГўГҐГ°ГёГЁГ­Гі
+			//do
+			//{
+			    skip:
+				for (int j = 0; j < Matrix_Copy[ks].size(); j++)   
+				{
+					if (Matrix_Copy[ks][j] == 1 && visited_ks[j] == 0)
+					{
+						Matrix_Copy[ks][j] = 0;
+						ks = j;
+						visited_ks[j] = 1;
+						goto skip;
+					}
+					else if (Matrix_Copy[ks][j] == 1 && visited_ks[j] == 1)
+						return true;
+				}
+			//}
+			if (VoidLine == true)    //Г…Г±Г«ГЁ Г±ГІГ°Г®ГЄГ  ГЁГ§ Г­ГіГ«ГҐГ©
 			{
-				if (Matrix_Copy[ks - 1][j] == 1)
-					VoidLine = false;
-			}
-			if (VoidLine == true)    //Если строка из нулей
-			{
-				//SortedKS.emplace(NumberOfKS, ks); //Добавляем вершину в список отсортированных
-				NumberOfKS--;                     //Уменьшаем
+				//SortedKS.emplace(NumberOfKS, ReNumbered_ks[ks]); //Г„Г®ГЎГ ГўГ«ГїГҐГ¬ ГўГҐГ°ГёГЁГ­Гі Гў Г±ГЇГЁГ±Г®ГЄ Г®ГІГ±Г®Г°ГІГЁГ°Г®ГўГ Г­Г­Г»Гµ
+				NumberOfKS--;                     //Г“Г¬ГҐГ­ГјГёГ ГҐГ¬
 				for (int i = 0; i < Matrix_Copy.size(); i++)
-					Matrix_Copy[i][ks - 1] = 0;               //Зануляем элементы использованной вершины
-				CopyKS.erase(ks);                 //Помечаем вершину как использованную
+					Matrix_Copy[i][ks] = 0;               //Г‡Г Г­ГіГ«ГїГҐГ¬ ГЅГ«ГҐГ¬ГҐГ­ГІГ» ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­Г®Г© ГўГҐГ°ГёГЁГ­Г»
+				CopyKS.erase(ReNumbered_ks[ks]);                 //ГЏГ®Г¬ГҐГ·Г ГҐГ¬ ГўГҐГ°ГёГЁГ­Гі ГЄГ ГЄ ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ Г­Г­ГіГѕ
 				DeletedElement = true;
 			}
-			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
+			if (DeletedElement)       //Г…Г±Г«ГЁ ГіГ¤Г Г«ГЁГ«ГЁ ГўГҐГ°ГёГЁГ­Гі, Г­Г Г·ГЁГ­Г ГҐГ¬ Г¶ГЁГЄГ« Г§Г Г­Г®ГўГ®
 				goto skip;
+			
 		}
 	} while (NumberOfKS > 0);
 	

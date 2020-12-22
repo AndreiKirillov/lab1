@@ -547,19 +547,16 @@ int main()
 		break;
 		case 10:
 		{
-			GasNetwork.CreateGraph(pipes,ks);
 			GasNetwork.PrintGraph();
 		}
 		break;
 		case 11:
 		{
-			GasNetwork.CreateGraph(pipes, ks);
 			GasNetwork.TopologicalSort();
 		}
 		break;
 		case 12:
 		{
-			GasNetwork.CreateGraph(pipes, ks);
 			if (GasNetwork.EmptyGraph)
 				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
 			else
