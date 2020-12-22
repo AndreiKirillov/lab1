@@ -135,7 +135,7 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 						endline = true;
 					}
 					else
-						cout << ", " << j+1;
+						cout << ", " << ReNumbered_ks[j];
 				}
 			if (endline)
 				cout << endl;
@@ -146,45 +146,73 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 		cout << "Газотранспортной сети не существует, так как нет связей между компрессорными станциями" << endl;
 }
 
+bool Graph::CheckCycle(vector<int>& visited_ks, int beginning)
+{
+	visited_ks[beginning] = 1;
+	for (int j = 0; j < Matrix[beginning].size(); j++)
+		if (Matrix[beginning][j] != 0) {
+			if (visited_ks[j] == 0) {
+				if (CheckCycle(visited_ks, j)) return true;
+			}
+			else if (visited_ks[j] == 1)
+				return true;
+		}
+	return false;
+}
+
 void Graph::TopologicalSort()       //Функция топологической сортировки
 {
 	CreateGraph();
-	map<int, int> SortedKS;     //ключ - номер вершины, значение - id КС
-	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
-	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
-	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
-	do//Пока есть неиспользованные вершины
+	bool cycle = false;
+	for (int i = 0; i < Matrix.size(); i++)
 	{
-		skip:                     //Лейбл для goto
-		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
+		vector<int> visited_ks(Matrix.size(), 0);
+		if (CheckCycle(visited_ks,0))
 		{
-			ks = ConvertKS(ks);
-			bool VoidLine = true;         //Если строка только с 0
-			bool DeletedElement = false;  //Если удалили вершину
-			for (int j = 0; j < Matrix_Copy[ks].size(); j++)   //Проверяем строку на занулённость
-			{
-				if (Matrix_Copy[ks][j] == 1)         
-					VoidLine = false;
-			}
-			if (VoidLine == true)    //Если строка из нулей
-			{
-				SortedKS.emplace(NumberOfKS, ReNumbered_ks[ks]); //Добавляем вершину в список отсортированных
-				NumberOfKS--;                     //Уменьшаем
-				for (int i = 0; i < Matrix_Copy.size(); i++)
-					Matrix_Copy[i][ks] = 0;               //Зануляем элементы использованной вершины
-				CopyKS.erase(ReNumbered_ks[ks]);                 //Помечаем вершину как использованную
-				DeletedElement = true;  
-			}
-			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
-				goto skip;         
+			cout << "Топологическая сортировка невозможна, в сети обнаружены циклы!" << endl;
+			cycle = true;
+			break;
 		}
-	} while (NumberOfKS > 0);     
-	////Выводим результат
-	cout << "\tТопографическая сортировка\t\n\n";
-	cout << "№ КС - id КС" << endl << endl;
-	for(auto& n :SortedKS)
+	}
+	if (!cycle)
 	{
-		cout << n.first << "\t" << n.second << endl;
+		map<int, int> SortedKS;     //ключ - номер вершины, значение - id КС
+		int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
+		vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
+		unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
+		do//Пока есть неиспользованные вершины
+		{
+		skip:                     //Лейбл для goto
+			for (int ks : CopyKS)      //Перебираем неиспользованные вершины
+			{
+				ks = ConvertKS(ks);
+				bool VoidLine = true;         //Если строка только с 0
+				bool DeletedElement = false;  //Если удалили вершину
+				for (int j = 0; j < Matrix_Copy[ks].size(); j++)   //Проверяем строку на занулённость
+				{
+					if (Matrix_Copy[ks][j] == 1)
+						VoidLine = false;
+				}
+				if (VoidLine == true)    //Если строка из нулей
+				{
+					SortedKS.emplace(NumberOfKS, ReNumbered_ks[ks]); //Добавляем вершину в список отсортированных
+					NumberOfKS--;                     //Уменьшаем
+					for (int i = 0; i < Matrix_Copy.size(); i++)
+						Matrix_Copy[i][ks] = 0;               //Зануляем элементы использованной вершины
+					CopyKS.erase(ReNumbered_ks[ks]);                 //Помечаем вершину как использованную
+					DeletedElement = true;
+				}
+				if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
+					goto skip;
+			}
+		} while (NumberOfKS > 0);
+		////Выводим результат
+		cout << "\tТопографическая сортировка\t\n\n";
+		cout << "№ КС - id КС" << endl << endl;
+		for (auto& n : SortedKS)
+		{
+			cout << n.first << "\t" << n.second << endl;
+		}
 	}
 }
 
@@ -251,94 +279,6 @@ int Graph::UserChooseKS_inGraph(set<int>& set_ks)
 		cout << "Введите корректное число!" << endl;
 	}
 	return ConvertKS(choosen_ks);  //Возвращаем порядковый номер
-}
-
-bool Graph::CheckCycle()
-{
-	//bool WhitePeak = true;
-	//vector<int> copy_of_ks;
-	//for (auto& ks : KS_in_Graph)
-	//{
-	//	copy_of_ks.push_back(ks);
-	//}
-	////while (WhitePeak)
-	////{
-	//	for (int grey_ks : KS_in_Graph)
-	//	{
-	//		vector<int> GreyPeak;
-	//		GreyPeak.push_back(grey_ks - 1);//делаем первую вершину серой
-	//		int i=0;
-	//		bool possibility = true;
-	//		bool grey_peak_found = false;
-	//		do
-	//		{
-
-	//			if (Matrix[grey_ks - 1][i] == 1)
-	//			{
-	//				for (auto& it : GreyPeak)
-	//					if (i == it)
-	//						grey_peak_found = true;
-	//				grey_ks = i + 1;
-	//			}
-	//			i++;
-	//		} while (i < Matrix.size() && possibility ==true);
-	//		//for (int i = 0; i < Matrix.size(); i++)  //проходим по строке с серой вершиной
-	//		//{
-	//		//	if(Matrix[ks-1][i]!=1 &&)
-	//		//	Matrix[ks - 1][i]
-	//		//}
-	//	}
-	////}
-	for (int beginning = 0; beginning < Matrix.size(); beginning++)
-	{
-		bool no_way = false;
-		vector<int> visited_ks(Matrix.size(), 0);
-		visited_ks[beginning] = 1;
-		for (int j = 0; j < Matrix[beginning].size(); j++)
-			if (Matrix[beginning][j] != 0) {
-				if (visited_ks[j] == 0) {
-					//if (cycle_exists(j, g, visit)) return true;
-				}
-				else if (visited_ks[j] == 1)
-					return true;
-			}
-	}
-	return false;
-	
-	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
-	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
-	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
-	set<int> GreyKS;
-	int index_i, index_j;
-	do//Пока есть неиспользованные вершины
-	{
-	skip:                     //Лейбл для goto
-		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
-		{
-			GreyKS = { -1 };
-			GreyKS.insert(ks - 1);//Помечаем начальную вершину
-			bool VoidLine = true;         //Если строка только с 0
-			bool DeletedElement = false;  //Если удалили вершину
-			for (int j = 0; j < Matrix_Copy[ks - 1].size(); j++)   //Проверяем строку на занулённость
-			{
-				if (Matrix_Copy[ks - 1][j] == 1)
-					VoidLine = false;
-			}
-			if (VoidLine == true)    //Если строка из нулей
-			{
-				//SortedKS.emplace(NumberOfKS, ks); //Добавляем вершину в список отсортированных
-				NumberOfKS--;                     //Уменьшаем
-				for (int i = 0; i < Matrix_Copy.size(); i++)
-					Matrix_Copy[i][ks - 1] = 0;               //Зануляем элементы использованной вершины
-				CopyKS.erase(ks);                 //Помечаем вершину как использованную
-				DeletedElement = true;
-			}
-			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
-				goto skip;
-		}
-	} while (NumberOfKS > 0);
-	
-	return false;
 }
 
 ofstream& operator<<(ofstream& outf, const Graph& g)

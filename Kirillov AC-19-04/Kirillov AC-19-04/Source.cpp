@@ -557,7 +557,7 @@ int main()
 		break;
 		case 12:
 		{
-			GasNetwork.CreateGraph(pipes, ks);
+			GasNetwork.CreateGraph();
 			if (GasNetwork.EmptyGraph)
 				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
 			else
@@ -570,8 +570,10 @@ int main()
 				if (beginning != end)
 				{
 					int Length = GasNetwork.ShortestWay(beginning, end);
-					cout << "Кратчайший путь между вершинами равен " << endl;
-					cout << Length << endl;
+					if (Length == 100000000)
+						cout << "Между данными компрессорными станциями нет пути!" << endl;
+					else
+						cout << "Кратчайший путь между вершинами равен " << Length << endl;
 				}
 				else
 					cout << "Начальная и конечная вершина совпадают, попробуйте снова!" << endl;
@@ -580,7 +582,7 @@ int main()
 		break;
 		case 13:
 		{
-			GasNetwork.CreateGraph(pipes, ks);
+			GasNetwork.CreateGraph();
 			if (GasNetwork.EmptyGraph)
 				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
 			else

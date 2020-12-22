@@ -32,7 +32,7 @@ public:
     void CreateGraph();    //Создание матрицы смежности
     //bool CheckLine(int index, string parametr);                    //Вспомогательная функция
     void PrintGraph();     //Вывод списков смежности в консоль
-    bool CheckCycle();      //Проверка на циклы
+    bool CheckCycle(vector<int>& visited_ks, int beginning );      //Проверка на циклы
     void TopologicalSort(); //Топологическая сортировка
     void MaxFlow(int u, int v);   //Функция расчёта максимального потока сети
     int ShortestWay(int v, int end);
