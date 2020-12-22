@@ -76,29 +76,29 @@ void Graph::ConnectKSbyPipe(vector<Pipe>& p, const vector<KS>& ks)             /
 	}
 }
 
-void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция создания матрицы смежности
+void Graph::CreateGraph()   //Функция создания матрицы смежности
 {//Переделывать
 	if (Pipes_in_Graph.size() == 0)
 		EmptyGraph = true;//Информация, что граф пустой
 	else
 	{
-		//vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
-		//for (int i = 0; i < matrix.size(); i++)
-		//	for (int j = 0; j < matrix[i].size(); j++)
-		//		matrix[i][j] = 0;                //Зануляем все элементы
-		//for (auto ed : All_edges)
-		//	matrix[ed.a][ConvertKS(ed.b)] = 1;
-		//Matrix = matrix;
-		vector<vector<int>> matrix(ks.size(), vector<int>(ks.size()));      //Создаем матрицу исходя из кол-ва кс в базе
+		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
+		for (int i = 0; i < matrix.size(); i++)
+			for (int j = 0; j < matrix[i].size(); j++)
+				matrix[i][j] = 0;                //Зануляем все элементы
+		for (auto ed : All_edges)
+			matrix[ed.a][ed.b] = 1;
+		Matrix = matrix;
+		//vector<vector<int>> matrix(ks.size(), vector<int>(ks.size()));      //Создаем матрицу исходя из кол-ва кс в базе
 
-		for (int i = 0; i < ks.size(); i++)
-			for (int j = 0; j < ks.size(); j++)
-				matrix[i][j] = 0;                         //Зануляем все элементы
-		for (auto& pipe_id : Pipes_in_Graph)         //Проходимся по трубам, задействованным в графе
-		{
-			matrix[p[pipe_id - 1].input - 1][p[pipe_id - 1].output - 1] = 1;      //Добавляем связь
-		}
-		Matrix = matrix;         //Присваиваем готовую матрицу полю класса
+		//for (int i = 0; i < ks.size(); i++)
+		//	for (int j = 0; j < ks.size(); j++)
+		//		matrix[i][j] = 0;                         //Зануляем все элементы
+		//for (auto& pipe_id : Pipes_in_Graph)         //Проходимся по трубам, задействованным в графе
+		//{
+		//	matrix[p[pipe_id - 1].input - 1][p[pipe_id - 1].output - 1] = 1;      //Добавляем связь
+		//}
+		//Matrix = matrix;         //Присваиваем готовую матрицу полю класса
 		//WeightMatrix = Matrix;
 		//for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
 		//{
@@ -107,30 +107,28 @@ void Graph::CreateGraph(const vector<Pipe>& p, const vector<KS>& ks)   //Функция
 	}
 }
 
-bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
-{
-	if (parametr == "line")//Чекаем строку
-	{
-		for (int j = 0; j < Matrix.size(); j++)
-			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
-				return true;
-	}else
-	if (parametr == "column")//Чекаем столбец
-	{
-		for (int i = 0; i < Matrix.size(); i++)
-			if (Matrix[i][index] > 0)
-				return true;
-	}
-	return false;//Если проверка ничего не выявила
-}
+//bool Graph::CheckLine(int index, string parametr)//Вспомогательная функция проверки строки/столбца на нули 
+//{
+//	if (parametr == "line")//Чекаем строку
+//	{
+//		for (int j = 0; j < Matrix.size(); j++)
+//			if (Matrix[index][j] > 0) //если есть элемент отличный от нуля возвращаем true
+//				return true;
+//	}else
+//	if (parametr == "column")//Чекаем столбец
+//	{
+//		for (int i = 0; i < Matrix.size(); i++)
+//			if (Matrix[i][index] > 0)
+//				return true;
+//	}
+//	return false;//Если проверка ничего не выявила
+//}
 
 void Graph::PrintGraph()        //Функция вывода графа в консоль
 {
+	CreateGraph();
 	//Выводим список смежности
-	bool Matrix_is_empty = false;
-	if (Pipes_in_Graph.size() == 0) 
-		Matrix_is_empty = true;
-	if (!Matrix_is_empty)        //Выводим граф только, если матрица не пустая
+	if (!EmptyGraph)        //Выводим граф только, если матрица не пустая
 	{
 		cout << "\tГазотранспортная сеть\t\n\n" <<
 			"Компрессорная станция <---> смежные с ней станции" << endl << endl;
@@ -142,7 +140,7 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 				{
 					if (endline == false)
 					{
-						cout << i+1 << "\t-\t" << j+1;       //Выводим id
+						cout << ReNumbered_ks[i] << "\t-\t" << ReNumbered_ks[j];       //Выводим id
 						endline = true;
 					}
 					else
@@ -159,35 +157,37 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 
 void Graph::TopologicalSort()       //Функция топологической сортировки
 {
+	CreateGraph();
 	map<int, int> SortedKS;     //ключ - номер вершины, значение - id КС
 	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
 	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
 	unordered_set<int> CopyKS = KS_in_Graph;               //Копия вершин графа, чтобы удалять их
 	do//Пока есть неиспользованные вершины
 	{
-		skip:                     //Лейбл для goto
+	skip:                     //Лейбл для goto
 		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
 		{
+			ks = ConvertKS(ks);
 			bool VoidLine = true;         //Если строка только с 0
 			bool DeletedElement = false;  //Если удалили вершину
-			for (int j = 0; j < Matrix_Copy[ks-1].size(); j++)   //Проверяем строку на занулённость
+			for (int j = 0; j < Matrix_Copy[ks].size(); j++)   //Проверяем строку на занулённость
 			{
-				if (Matrix_Copy[ks-1][j] == 1)         
+				if (Matrix_Copy[ks][j] == 1)
 					VoidLine = false;
 			}
 			if (VoidLine == true)    //Если строка из нулей
 			{
-				SortedKS.emplace(NumberOfKS, ks); //Добавляем вершину в список отсортированных
+				SortedKS.emplace(NumberOfKS, ReNumbered_ks[ks]); //Добавляем вершину в список отсортированных
 				NumberOfKS--;                     //Уменьшаем
 				for (int i = 0; i < Matrix_Copy.size(); i++)
-					Matrix_Copy[i][ks - 1] = 0;               //Зануляем элементы использованной вершины
-				CopyKS.erase(ks);                 //Помечаем вершину как использованную
-				DeletedElement = true;  
+					Matrix_Copy[i][ks] = 0;               //Зануляем элементы использованной вершины
+				CopyKS.erase(ReNumbered_ks[ks]);                 //Помечаем вершину как использованную
+				DeletedElement = true;
 			}
 			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
-				goto skip;         
+				goto skip;
 		}
-	} while (NumberOfKS > 0);     
+	} while (NumberOfKS > 0);
 	////Выводим результат
 	cout << "\tТопографическая сортировка\t\n\n";
 	cout << "№ КС - id КС" << endl << endl;
@@ -197,9 +197,9 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	}
 }
 
-void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
+void Graph::MaxFlow()
 {
-	CreateGraph(p, ks);
+	CreateGraph();
 	if (EmptyGraph)
 		cout << "Невозможно расчитать максимальный поток, потому что в сети нет объектов!" << endl;
 	else
@@ -207,7 +207,7 @@ void Graph::MaxFlow(const vector<Pipe>& p, const vector<KS>& ks)
 		vector<vector<int>> WeightMatrix = Matrix;//Матрица весов
 		for (int pipe : Pipes_in_Graph)    //заполняем матрицу весов
 		{
-			WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
+			//WeightMatrix[p[pipe - 1].input][p[pipe - 1].output] = p[pipe - 1].length; //В качестве веса длина трубы
 		}
 	}
 }
@@ -249,40 +249,21 @@ int Graph::UserChooseKS_inGraph(set<int>& set_ks)
 
 bool Graph::CheckCycle()
 {
-	//bool WhitePeak = true;
-	//vector<int> copy_of_ks;
-	//for (auto& ks : KS_in_Graph)
-	//{
-	//	copy_of_ks.push_back(ks);
-	//}
-	////while (WhitePeak)
-	////{
-	//	for (int grey_ks : KS_in_Graph)
-	//	{
-	//		vector<int> GreyPeak;
-	//		GreyPeak.push_back(grey_ks - 1);//делаем первую вершину серой
-	//		int i=0;
-	//		bool possibility = true;
-	//		bool grey_peak_found = false;
-	//		do
-	//		{
-
-	//			if (Matrix[grey_ks - 1][i] == 1)
-	//			{
-	//				for (auto& it : GreyPeak)
-	//					if (i == it)
-	//						grey_peak_found = true;
-	//				grey_ks = i + 1;
-	//			}
-	//			i++;
-	//		} while (i < Matrix.size() && possibility ==true);
-	//		//for (int i = 0; i < Matrix.size(); i++)  //проходим по строке с серой вершиной
-	//		//{
-	//		//	if(Matrix[ks-1][i]!=1 &&)
-	//		//	Matrix[ks - 1][i]
-	//		//}
-	//	}
-	////}
+	for (int beginning = 0; beginning < Matrix.size(); beginning++)
+	{
+		bool no_way = false;
+		vector<int> visited_ks(Matrix.size(), 0);
+		visited_ks[beginning] = 1; 
+		for (int j = 0; j < Matrix[beginning].size(); j++)
+			if (Matrix[beginning][j] != 0) {
+				if (visited_ks[j] == 0) {
+					//if (cycle_exists(j, g, visit)) return true;
+				}
+				else if (visited_ks[j] == 1)
+					return true;
+			}
+	}
+	return false;
 	
 	int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
 	vector<vector<int>> Matrix_Copy = Matrix;      //Копия матрицы смежности, чтобы занулять строки
@@ -291,29 +272,41 @@ bool Graph::CheckCycle()
 	int index_i, index_j;
 	do//Пока есть неиспользованные вершины
 	{
-	skip:                     //Лейбл для goto
 		for (int ks : CopyKS)      //Перебираем неиспользованные вершины
 		{
-			GreyKS = { -1 };
-			GreyKS.insert(ks - 1);//Помечаем начальную вершину
+			vector<int> visited_ks(Matrix.size(), 0);
+			ks = ConvertKS(ks);
+			visited_ks[ks] = 1;
 			bool VoidLine = true;         //Если строка только с 0
 			bool DeletedElement = false;  //Если удалили вершину
-			for (int j = 0; j < Matrix_Copy[ks - 1].size(); j++)   //Проверяем строку на занулённость
-			{
-				if (Matrix_Copy[ks - 1][j] == 1)
-					VoidLine = false;
-			}
+			//do
+			//{
+			    skip:
+				for (int j = 0; j < Matrix_Copy[ks].size(); j++)   
+				{
+					if (Matrix_Copy[ks][j] == 1 && visited_ks[j] == 0)
+					{
+						Matrix_Copy[ks][j] = 0;
+						ks = j;
+						visited_ks[j] = 1;
+						goto skip;
+					}
+					else if (Matrix_Copy[ks][j] == 1 && visited_ks[j] == 1)
+						return true;
+				}
+			//}
 			if (VoidLine == true)    //Если строка из нулей
 			{
-				//SortedKS.emplace(NumberOfKS, ks); //Добавляем вершину в список отсортированных
+				//SortedKS.emplace(NumberOfKS, ReNumbered_ks[ks]); //Добавляем вершину в список отсортированных
 				NumberOfKS--;                     //Уменьшаем
 				for (int i = 0; i < Matrix_Copy.size(); i++)
-					Matrix_Copy[i][ks - 1] = 0;               //Зануляем элементы использованной вершины
-				CopyKS.erase(ks);                 //Помечаем вершину как использованную
+					Matrix_Copy[i][ks] = 0;               //Зануляем элементы использованной вершины
+				CopyKS.erase(ReNumbered_ks[ks]);                 //Помечаем вершину как использованную
 				DeletedElement = true;
 			}
 			if (DeletedElement)       //Если удалили вершину, начинаем цикл заново
 				goto skip;
+			
 		}
 	} while (NumberOfKS > 0);
 	
