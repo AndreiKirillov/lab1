@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-int KS::MAX_ID = 0;
+int KS::MAX_ID = 1;
 
 KS::KS()
 {

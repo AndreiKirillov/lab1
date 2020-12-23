@@ -183,12 +183,11 @@ vector<int> FindPipe(const vector<Pipe>& p, int MaxPossibleValue)        //Функц
 		if (p.size() > 0)
 		{
 			cout << "Можно выбрать только одну трубу!" << endl;
-			cout << "Введите ID трубы, которую хотите выбрать (диапазон " << 1 << "-" << p.size() << ")" << endl;
-			int pipe_id = GetNumber(1, p.size());
+			cout << "Введите ID трубы, которую хотите выбрать (диапазон " << 1 << "-" << p[0].MAX_ID << ")" << endl;
+			int pipe_id = GetNumber(1, p[0].MAX_ID);
 			for (int i = 0; i < p.size(); i++)
 				if (p[i].id == pipe_id)
 					res.push_back(i);
-			//res.push_back(pipe_id-1);
 			return res;
 		}
 		else
@@ -241,12 +240,12 @@ vector<int> UserChooseKS(const vector<KS>& ks, int MaxPossibleValue)
 	{
 		if (ks.size() != 0)
 		{
-			cout << "Вводите ID кс, которые хотите найти (диапазон " << 1 << "-" << ks.size() << ")" << endl <<
+			cout << "Вводите ID кс, которые хотите найти (диапазон " << 1 << "-" << ks[0].MAX_ID << ")" << endl <<
 				"Чтобы закончить, введите ноль" << endl;
 			int id;
 			do
 			{                                                 //Ищем кс по желанию пользователя
-				id = GetNumber(0, ks.size());
+				id = GetNumber(0, ks[0].MAX_ID);
 				if (id != 0)
 				{
 					for(int i=0;i<ks.size();i++)
@@ -290,23 +289,19 @@ void DeletePipes(vector<Pipe>& p, Graph& g)        //Удаление труб
 	{
 		for (int j = 0; j < pipe_indexes.size(); j++)
 		{
-			if (p[i].id == pipe_indexes[j]+1)
+			if (p[i].id == p[pipe_indexes[j]].id)
 			{
 				
-				if (g.Pipes_in_Graph.find(pipe_indexes[j] + 1) != g.Pipes_in_Graph.end())
-					g.Pipes_in_Graph.erase(pipe_indexes[j] + 1);
+				if (g.Pipes_in_Graph.find(p[pipe_indexes[j]].id) != g.Pipes_in_Graph.end())
+					g.Pipes_in_Graph.erase(p[pipe_indexes[j]].id);
 				int value = 0;
 				for (int k = 0; k < g.All_edges.size(); k++)
-					if (g.All_edges[k].a == p[pipe_indexes[j]].id || g.All_edges[k].b == pipe_indexes[j] + 1)
-						value++;
+					if (g.All_edges[k].cost == p[pipe_indexes[j]].length)   //Удаляем нужное ребро из массива всех рёбер   
+						g.All_edges.erase(g.All_edges.begin() + k);
 				p.erase(p.begin() + i);
 			}
 		}
 	}
-	/*for (int i = 0; i < p.size(); i++)
-	{
-		p[i].id = i + 1;
-	}*/
 }
 
 void DeleteKS(vector<KS>& ks, vector<Pipe>& p, Graph& g)      //Удаление кс
@@ -316,32 +311,38 @@ void DeleteKS(vector<KS>& ks, vector<Pipe>& p, Graph& g)      //Удаление кс
 	{
 		for (int j = 0; j < ks_indexes.size(); j++)
 		{
-			if (ks[i].id == ks_indexes[j] + 1)           
+			if (ks[i].id == ks[ks_indexes[j]].id)           
 			{
+				for (int k = 0; k < g.ReNumbered_ks.size(); k++)
+					if (g.ReNumbered_ks[k] == ks[ks_indexes[j]].id)    //Корректируем порядковые номера кс
+					{
+						for (int n = k + 1; n < g.ReNumbered_ks.size(); n++)  //для тех номеров, что идут после
+							for (auto& edge : g.All_edges)
+							{
+								if (g.ReNumbered_ks[edge.a] == g.ReNumbered_ks[n])
+									edge.a--;
+								if (g.ReNumbered_ks[edge.b] == g.ReNumbered_ks[n])
+									edge.b--;
+							}
+						g.ReNumbered_ks.erase(g.ReNumbered_ks.begin() + k);
+						break;
+					}
 				for (auto& pipe : p)              //Если кс задействована в сети, то надо удалить связи труб с ней
 					if (pipe.input == ks[i].id || pipe.output == ks[i].id)
 					{
 						pipe.input = 0;
 						pipe.output = 0;
-						g.Pipes_in_Graph.erase(pipe.id);
-					}
-				if (g.KS_in_Graph.find(ks_indexes[j]) != g.KS_in_Graph.end())
-					g.KS_in_Graph.erase(ks_indexes[j] + 1);
-				/*if (g.KS_lines.find(ks_indexes[j]) != g.KS_lines.end())
-					g.KS_lines.erase(ks_indexes[j] + 1);
-				if (g.KS_columns.find(ks_indexes[j]) != g.KS_columns.end())
-					g.KS_columns.erase(ks_indexes[j] + 1);*/
-				for (int i = 0; i < g.ReNumbered_ks.size(); i++)
-					if (g.ReNumbered_ks[i] == ks_indexes[j] + 1)
-						g.ReNumbered_ks.erase(g.ReNumbered_ks.begin() + i);
+						g.Pipes_in_Graph.erase(pipe.id);              //Удаляем трубу
+						for (int k = 0; k < g.All_edges.size(); k++)
+							if (pipe.length == g.All_edges[k].cost)
+								g.All_edges.erase(g.All_edges.begin() + k);    //Удаляем ребро графа
+					}                                                        //Может остаться одинокая кс в сети, пока не рассмотрел этот случай
+				if (g.KS_in_Graph.find(ks[i].id) != g.KS_in_Graph.end())
+					g.KS_in_Graph.erase(ks[i].id);
 				ks.erase(ks.begin() + i);
 			}
 		}
 	}
-	/*for (int i = 0; i < ks.size(); i++)
-	{
-		ks[i].id = i + 1;
-	}*/
 }
 
 void SaveData(const vector<Pipe>& p,const vector<KS>& ks, const Graph& g)       //Описание функции сохранения
@@ -424,7 +425,7 @@ void DownloadSaves(vector<Pipe>& p, vector<KS>& ks, Graph& g)         //Описание
 			}
 			for (i = 0; i < g.ReNumbered_ks.size(); i++)
 				inf >> g.ReNumbered_ks[i];
-			for (i = 0; i < g.ReNumbered_ks.size(); i++)
+			for (i = 0; i < g.All_edges.size(); i++)
 			{
 				inf >> g.All_edges[i].a;
 				inf >> g.All_edges[i].b;

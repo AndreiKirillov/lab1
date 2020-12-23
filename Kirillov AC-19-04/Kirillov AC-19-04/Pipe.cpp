@@ -3,7 +3,7 @@
 #include <fstream>
 using namespace std;
 
-int Pipe::MAX_ID = 0;
+int Pipe::MAX_ID = 1;
 
 Pipe::Pipe()
 {

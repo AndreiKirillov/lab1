@@ -78,12 +78,12 @@ void Graph::CreateGraph()   //Функция создания матрицы смежности
 		EmptyGraph = true;//Информация, что граф пустой
 	else
 	{
-		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //
+		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      
 		for (int i = 0; i < matrix.size(); i++)
 			for (int j = 0; j < matrix[i].size(); j++)
-				matrix[i][j] = 0;                //
-		for (auto ed : All_edges)
-			matrix[ed.a][ed.b] = 1;
+				matrix[i][j] = 0;               
+		for (auto edge : All_edges)
+			matrix[edge.a][edge.b] = 1;
 		Matrix = matrix;
 		
 		//WeightMatrix = Matrix;
@@ -142,7 +142,7 @@ void Graph::PrintGraph()        //Функция вывода графа в консоль
 		cout << "Газотранспортной сети не существует, так как нет связей между компрессорными станциями" << endl;
 }
 
-bool Graph::CheckCycle(vector<int>& visited_ks, int beginning)
+bool Graph::CheckCycle(vector<int>& visited_ks, int beginning)   //Рекурсивная функция проверки наличия цикла в графе
 {
 	visited_ks[beginning] = 1;
 	for (int j = 0; j < Matrix[beginning].size(); j++)
@@ -153,6 +153,7 @@ bool Graph::CheckCycle(vector<int>& visited_ks, int beginning)
 			else if (visited_ks[j] == 1)
 				return true;
 		}
+	visited_ks[beginning] = 2;
 	return false;
 }
 
@@ -163,14 +164,14 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	for (int i = 0; i < Matrix.size(); i++)
 	{
 		vector<int> visited_ks(Matrix.size(), 0);
-		if (CheckCycle(visited_ks,0))
+		if (CheckCycle(visited_ks,0))              //Проверяем наличие циклов
 		{
 			cout << "Топологическая сортировка невозможна, в сети обнаружены циклы!" << endl;
 			cycle = true;
 			break;
 		}
 	}
-	if (!cycle)
+	if (!cycle)    //Если нет цикла, делаем топологическую сортировку
 	{
 		map<int, int> SortedKS;     //ключ - номер вершины, значение - id КС
 		int NumberOfKS = KS_in_Graph.size();           //Неиспользованные вершины
@@ -263,20 +264,6 @@ int Graph::ConvertKS(int ks_id)    //Принимаем id кс
 			return i;                 //Возвращаем порядковый номер кс
 }
 
-//int Graph::UserChooseKS_inGraph(set<int>& set_ks)
-//{
-//	for (int i : set_ks)
-//		cout << i << " ";       //Показываем возможные вершины
-//	int choosen_ks;      
-	//while ((cin >> choosen_ks).fail() || set_ks.find(choosen_ks) == set_ks.end()) //Проверяем ввод на допустимость
-	//{
-	//	cin.clear();
-	//	cin.ignore(32767, '\n');
-	//	cout << "Введите корректное число!" << endl;
-	//}
-//	return ConvertKS(choosen_ks);  //Возвращаем порядковый номер
-//}
-
 ofstream& operator<<(ofstream& outf, const Graph& g)
 {
 	for (int i : g.Pipes_in_Graph)
@@ -285,10 +272,6 @@ ofstream& operator<<(ofstream& outf, const Graph& g)
 		outf << i << endl;
 	for (int i = 0; i < g.ReNumbered_ks.size(); i++)
 		outf << g.ReNumbered_ks[i] << endl;
-	/*for (int i : g.KS_lines)
-		outf << i << endl;
-	for (int i : g.KS_columns)
-		outf << i << endl;*/
 	for (int i = 0; i < g.All_edges.size(); i++)
 	{
 		outf << g.All_edges[i].a << endl;
