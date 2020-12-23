@@ -101,8 +101,8 @@ void RedactKS(vector<KS>& ks)      //Функция для редактирования кс
 	}
 	else
 	{
-		cout << "Введите ID компрессорной станции, которую хотите редактировать(диапазон " << 1 << "-" << ks.size() << ")" << endl;
-		int id = GetNumber(1, ks.size())-1;
+		cout << "Введите ID компрессорной станции, которую хотите редактировать(диапазон " << 1 << "-" << ks[0].MAX_ID << ")" << endl;
+		int id = GetNumber(1, ks[0].MAX_ID);
 		cout << "Что именно вы хотите редактировать?" << endl;
 		int WhatToRedact;  //Переменная, в неё запишется число, отражающее то что хочет редактировать пользователь
 		do
@@ -610,19 +610,20 @@ int main()
 		break;
 		case 13:
 		{
-			GasNetwork.CreateGraph();
-			if (GasNetwork.EmptyGraph)
-				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
-			else
-			{
-				map<int, int> peaks = UserChooseGraphKS(GasNetwork);
-				auto it = peaks.begin();
-				
-				/*if (beginning != end)
-				{
-					GasNetwork.MaxFlow(beginning, end);
-				}*/
-			}
+			cout << "InActive function!" << endl;
+			//GasNetwork.CreateGraph();
+			//if (GasNetwork.EmptyGraph)
+			//	cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
+			//else
+			//{
+			//	map<int, int> peaks = UserChooseGraphKS(GasNetwork);
+			//	auto it = peaks.begin();
+			//	
+			//	/*if (beginning != end)
+			//	{
+			//		GasNetwork.MaxFlow(beginning, end);
+			//	}*/
+			//}
 		}
 		break;
 		case 14:
