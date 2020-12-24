@@ -610,20 +610,25 @@ int main()
 		break;
 		case 13:
 		{
-			cout << "InActive function!" << endl;
-			//GasNetwork.CreateGraph();
-			//if (GasNetwork.EmptyGraph)
-			//	cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
-			//else
-			//{
-			//	map<int, int> peaks = UserChooseGraphKS(GasNetwork);
-			//	auto it = peaks.begin();
-			//	
-			//	/*if (beginning != end)
-			//	{
-			//		GasNetwork.MaxFlow(beginning, end);
-			//	}*/
-			//}
+			GasNetwork.CreateGraph();
+			if (GasNetwork.EmptyGraph)
+				cout << "Ошибка! Отсутствует газотранспортная сеть!" << endl;
+			else
+			{
+				map<int, int> peaks = UserChooseGraphKS(GasNetwork);
+				auto it = peaks.begin();
+				if (it->first != it->second)
+				{
+					int Flow = GasNetwork.MaxFlow(it->first, it->second);
+					if (Flow == 0)
+						cout << "Между данными компрессорными станциями не существует потока!" << endl;
+					else
+						cout << "Максимальный поток между данными вершинами равен " << Flow << endl;
+				}
+				else
+					cout << "Начальная и конечная вершина совпадают, попробуйте снова!" << endl;
+				
+			}
 		}
 		break;
 		case 14:

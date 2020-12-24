@@ -213,33 +213,61 @@ void Graph::TopologicalSort()       //Функция топологической сортировки
 	}
 }
 
-void Graph::MaxFlow(int u, int v)
+int Graph::MaxFlow(int istok, int stok) //Функция нахождения максимального потока
 {
 	if (EmptyGraph)
+	{
 		cout << "Невозможно расчитать максимальный поток, потому что в сети нет объектов!" << endl;
+		return 0;
+	}
 	else
 	{
-		vector<vector<int>> matrix(KS_in_Graph.size(), vector<int>(KS_in_Graph.size()));      //Создаем матрицу исходя из кол-ва кс в базе
-		vector<vector<int>> WeightMatrix = matrix;//Матрица весов
-		for (int i = 0; i < matrix.size(); i++)
-			for (int j = 0; j < matrix[i].size(); j++)
-			{
-				matrix[i][j] = 0;                //Зануляем все элементы
+		vector<vector<int>> Copy_matrix = Matrix;   //Копия матрицы смежности 
+		vector<vector<int>> WeightMatrix = Matrix;//Матрица весов
+		for (int i = 0; i < Matrix.size(); i++)
+			for (int j = 0; j < Matrix[i].size(); j++)
 				WeightMatrix[i][j] = 0;
-			}
 		for (auto ed : All_edges)
-		{
-			matrix[ConvertKS(ed.a)][ConvertKS(ed.b)] = 1;               //Создали матрицу из порядковых номеров от 0 до n
-			WeightMatrix[ConvertKS(ed.a)][ConvertKS(ed.b)] = ed.cost;   //Заполняем матрицу весов
-		}
-		//Matrix = matrix;
-		bool new_way = true; 
-		int Flow;
-		vector<edge> Copy_edges = All_edges;
-		do
-		{
+			WeightMatrix[ed.a][ed.b] = ed.cost;   //Заполняем матрицу весов
+		int Flow=0;           //Макс поток  
+		while (true) {
+			/**< Поиск в ширину */
+			vector <int> parent(KS_in_Graph.size(), -1);
+			vector <bool> used(KS_in_Graph.size(), false);
+			queue <int> q;        //очередь
+            used[istok] = true;
+			q.push(istok);
+			while (!q.empty()) {
+				int v = q.front();
+				q.pop();
 
-		} while (new_way);
+				for (int i = 0; i < KS_in_Graph.size(); i++) {
+					if (!used[i] && WeightMatrix[v][i] > 0) {
+						parent[i] = v;
+						used[i] = true;
+						q.push(i);
+					}
+				}
+			}
+			if (!used[stok])//Не дошли до стока - поток уже максимальный
+				break;
+			int AugFlow = 10000000;//Дополнительный поток
+			/**< Бежим по пути и ищем ребро с минимальной пропускной способностью */
+			int ptr = stok;
+			while (ptr != istok) {
+				AugFlow = min(AugFlow, WeightMatrix[parent[ptr]][ptr]);
+				ptr = parent[ptr];
+			}
+			/**< Изменяем пропускные способности */
+			ptr = stok;
+			while (ptr != istok) {
+				WeightMatrix[parent[ptr]][ptr] -= AugFlow;//По пути вычитаем
+				WeightMatrix[ptr][parent[ptr]] += AugFlow;//Против пути добавляем
+				ptr = parent[ptr];
+			}
+			Flow += AugFlow;
+		}
+		return Flow;               //В основе лежит алгоритм с https://codeforces.com/blog/entry/78927
 	}
 }
 

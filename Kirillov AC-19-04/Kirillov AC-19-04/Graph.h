@@ -34,7 +34,7 @@ public:
     void PrintGraph();     //Вывод списков смежности в консоль
     bool CheckCycle(vector<int>& visited_ks, int beginning );      //Проверка на циклы
     void TopologicalSort(); //Топологическая сортировка
-    void MaxFlow(int u, int v);   //Функция расчёта максимального потока сети
+    int MaxFlow(int istok, int stok);   //Функция расчёта максимального потока сети
     int ShortestWay(int v, int end);
     int ConvertKS(int ks_id); //Вспомогательная функция, конвертирует id кс в её порядковый номер
     //int UserChooseKS_inGraph(set<int>& set_ks);  //Взаимодействие с пользователем; он выбирает начальную и конечную вершины
